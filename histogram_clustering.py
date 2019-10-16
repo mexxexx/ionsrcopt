@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
+import itertools
 
 def generate_density_histogram(df, columns, bins):
-    """ From the supplied data generates a histogram, where the value of each bin indicates how many items
-        lay inside, in percent. I.e summing over the whole histogram yields 1.
+    """ From the supplied data generates a histogram, where the value of each bin indicates how many items lay inside, in percent. I.e summing over the whole histogram yields 1.
 
     Parameters:
         df (DataFrame)
@@ -54,8 +54,7 @@ def do_BFS_step(p, clusters, current_cluster, bins, histogram_values, threshold)
     return result
 
 def nearest_neighbour_clustering(histogram_values, bins, density_threshold):
-    """ Searches for clusters in the given histogram, where all bins with a density below the threshold
-        are discarded as noise. For clustering BFS is used, i.e. clusters are connected components of the underlying graph.
+    """ Searches for clusters in the given histogram, where all bins with a density below the threshold are discarded as noise. For clustering BFS is used, i.e. clusters are connected components of the underlying graph.
 
     Parameters:
         histogram_values (nparray): The values of every bin.
@@ -70,7 +69,8 @@ def nearest_neighbour_clustering(histogram_values, bins, density_threshold):
     clusters *= -1
     current_cluster = 0
 
-    perms = [(a, b, c) for a in range(bins[0]) for b in range(bins[1]) for c in range(bins[2])]
+    l = [range(b) for b in bins]
+    perms = list(itertools.product(*l))
     for p in perms:
         if clusters[p] >= 0 or histogram_values[p] < density_threshold:
             continue
@@ -85,3 +85,21 @@ def nearest_neighbour_clustering(histogram_values, bins, density_threshold):
 
     print("Found {} cluster(s)".format(current_cluster))
     return clusters
+
+def create_cluster_frame(histogram_edges, histogram_values, bins, clusters, columns, cluster_column_name='CLUSTER'): 
+    """ Constructs a Data Frame from a histogram and cluster results
+
+    Parameters:
+        histogram_edges (list of nparray): Edges of the bins in every dimension
+        histogram_values (nparray): The values of every bin.
+        bins (list)
+        clusters (list of int): cluster, to which every bin belongs to
+        columns (list of string): column names of clustered data
+        cluster_column_name (string): column name of the cluster result
+    """
+    
+    l = [range(b) for b in bins]
+    perms = list(itertools.product(*l))
+    values = [[(histogram_edges[i][perm[i]] + histogram_edges[i][perm[i]+1])*0.5 for i in range(len(bins))] + [histogram_values[perm], clusters[perm]] for perm in perms]
+    clustered = pd.DataFrame(values, columns=columns + ['DENSITY', cluster_column_name])
+    return clustered

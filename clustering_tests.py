@@ -48,6 +48,6 @@ print("Threshold: {}".format(threshold))
 
 clusters = hc.nearest_neighbour_clustering(H, bins, threshold)
 cl_df = hc.create_cluster_frame(edges, H, bins, clusters, cols_to_cluster)
-cl_df.group_by('CLUSTER').describe().sort_values([('DENSITY', 'count')], ascending=0)
+cl_df = cl_df.groupby('CLUSTER').describe().sort_values([('DENSITY', 'count')], ascending=0)
 
 #%%

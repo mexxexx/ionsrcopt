@@ -1,2 +1,3 @@
 *.csv
 Data_Raw/figures/*
+__pycache__/

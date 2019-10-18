@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import itertools
+from statsmodels.stats.weightstats import DescrStatsW
 
 def generate_density_histogram(df, columns, bins):
     """ From the supplied data generates a histogram, where the value of each bin indicates how many items lay inside, in percent. I.e summing over the whole histogram yields 1.
@@ -96,6 +97,9 @@ def create_cluster_frame(histogram_edges, histogram_values, bins, clusters, colu
         clusters (list of int): cluster, to which every bin belongs to
         columns (list of string): column names of clustered data
         cluster_column_name (string): column name of the cluster result
+
+    Returns:
+        DataFrame: A frame that contains density and cluster information about every bin
     """
     
     l = [range(b) for b in bins]
@@ -103,3 +107,44 @@ def create_cluster_frame(histogram_edges, histogram_values, bins, clusters, colu
     values = [[(histogram_edges[i][perm[i]] + histogram_edges[i][perm[i]+1])*0.5 for i in range(len(bins))] + [histogram_values[perm], clusters[perm]] for perm in perms]
     clustered = pd.DataFrame(values, columns=columns + ['DENSITY', cluster_column_name])
     return clustered
+
+
+def describe_cluster(cluster, columns):
+    """ Generate descriptive statistics for a cluster
+
+    Parameters:
+        cluster (DataFrame): A dataframe, that contains density informations for every bin in the cluster
+        columns (list of string): The names of the columns for which to generate statistics
+
+    Returns: 
+        Series: All statistics for the selected columns
+    """
+
+    values = cluster.values
+    dstats = DescrStatsW(values, cluster['DENSITY'].values if len(values) > 1 else None)
+    mean = dstats.mean
+    std = dstats.std
+    quantiles = dstats.quantile(0.5, return_pandas=False)
+    
+    result_columns = [[mean[i], std[i], cluster[columns[i]].min(), quantiles[0][i], cluster[columns[i]].max()] for i in range(len(columns))]
+    result = list(itertools.chain(*result_columns)) + [cluster['DENSITY'].count(), cluster['DENSITY'].sum()]
+    
+    value_columns = [[(col, 'mean'), (col, 'std'), (col, 'min'), (col, 'median'), (col, 'max')] for col in columns]
+    index = list(itertools.chain(*value_columns)) + [('DENSITY', 'count'), ('DENSITY', 'total')]
+    
+    return pd.Series(result, index=pd.MultiIndex.from_tuples(index))
+
+
+def describe_clusters(df, columns):
+    """ Summarize all clusters and sort them by density
+
+    Parameters:
+        df (DataFrame): A frame containing density and cluster information about every bin
+        columns (list of string): The names of the columns for which to generate statistics
+    
+    Returns:
+        DataFrame: Descriptive frame sorted by density
+    """
+
+    result = df.groupby('CLUSTER').apply(describe_cluster, columns)
+    return result.sort_values(('DENSITY', 'total'), ascending=0)

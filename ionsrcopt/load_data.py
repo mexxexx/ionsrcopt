@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def read_data_from_csv(filename, cols_to_read, rows_to_read):
     """ Read a csv file into a DataFrame
@@ -67,6 +68,9 @@ def convert_column_types(df):
     return df
 
 
+def set_BCT25_current_none(df, condition):
+    df['ITF.BCT25:CURRENT'] = np.select([condition], [np.nan], [df['ITF.BCT25:CURRENT']])
+
 def clean_data(df):
     """ Clean the data of measurements, that are outliers, e.g. spikes in the extraction current.
 
@@ -78,26 +82,36 @@ def clean_data(df):
     """
 
     print("Filtering data...")
-    df.dropna(inplace=True)
+    #df.dropna(inplace=True)
     if 'ITF.BCT15:CURRENT' in df.columns:
-        df.drop(df[df['ITF.BCT15:CURRENT'] < 0].index, inplace=True)
+        #df.drop(df[df['ITF.BCT15:CURRENT'] < 0].index, inplace=True)
+        set_BCT25_current_none(df, df['ITF.BCT15:CURRENT'] < 0)
     if 'ITF.BCT25:CURRENT' in df.columns:
-        df.drop(df[df['ITF.BCT25:CURRENT'] < 0].index, inplace=True)
+        #df.drop(df[df['ITF.BCT25:CURRENT'] < 0].index, inplace=True)
+        set_BCT25_current_none(df, df['ITF.BCT25:CURRENT'] < 0)
     if 'ITH.BCT41:CURRENT' in df.columns:
-        df.drop(df[df['ITH.BCT41:CURRENT'] < 0].index, inplace=True)
+        #df.drop(df[df['ITH.BCT41:CURRENT'] < 0].index, inplace=True)
+        set_BCT25_current_none(df, df['ITH.BCT41:CURRENT'] < 0)
     if 'ITL.BCT05:CURRENT' in df.columns:
-        df.drop(df[df['ITL.BCT05:CURRENT'] < 0].index, inplace=True)
+        #df.drop(df[df['ITL.BCT05:CURRENT'] < 0].index, inplace=True)
+        set_BCT25_current_none(df, df['ITL.BCT05:CURRENT'] < 0)
     if 'IP.NSRCGEN:OVEN1AQNP' in df.columns:
-        df.drop(df[df['IP.NSRCGEN:OVEN1AQNP'] < 4.5].index, inplace=True)
+        #df.drop(df[df['IP.NSRCGEN:OVEN1AQNP'] < 4.5].index, inplace=True)
+        set_BCT25_current_none(df, df['IP.NSRCGEN:OVEN1AQNP'] < 4.5)
     if 'IP.SOLEXT.ACQUISITION:CURRENT' in df.columns:
-        df.drop(df[df['IP.SOLEXT.ACQUISITION:CURRENT'] < 1200].index, inplace=True)
+        #df.drop(df[df['IP.SOLEXT.ACQUISITION:CURRENT'] < 1200].index, inplace=True)
+        set_BCT25_current_none(df, df['IP.SOLEXT.ACQUISITION:CURRENT'] < 1200)
     if 'IP.NSRCGEN:BIASDISCAQNV' in df.columns:
-        df.drop(df[df['IP.NSRCGEN:BIASDISCAQNV'] == 0].index, inplace=True)
+        #df.drop(df[df['IP.NSRCGEN:BIASDISCAQNV'] == 0].index, inplace=True)
+        set_BCT25_current_none(df, df['IP.NSRCGEN:BIASDISCAQNV'] == 0)
     if 'IP.SAIREM2:FORWARDPOWER' in df.columns:
-        df.drop(df[df['IP.SAIREM2:FORWARDPOWER'] < 500].index, inplace=True)
+        #df.drop(df[df['IP.SAIREM2:FORWARDPOWER'] < 500].index, inplace=True)
+        set_BCT25_current_none(df, df['IP.SAIREM2:FORWARDPOWER'] < 500)
     if 'IP.NSRCGEN:SOURCEHTAQNI' in df.columns:
-        df.drop(df[df['IP.NSRCGEN:SOURCEHTAQNI'] > 2.5].index, inplace=True)
+        #df.drop(df[df['IP.NSRCGEN:SOURCEHTAQNI'] > 2.5].index, inplace=True)
+        set_BCT25_current_none(df, df['IP.NSRCGEN:SOURCEHTAQNI'] > 2.5)
     if 'IP.NSRCGEN:SOURCEHTAQNI' in df.columns:
-        df.drop(df[df['IP.NSRCGEN:SOURCEHTAQNI'] < 0.5].index, inplace=True)
+        #df.drop(df[df['IP.NSRCGEN:SOURCEHTAQNI'] < 0.5].index, inplace=True)
+        set_BCT25_current_none(df, df['IP.NSRCGEN:SOURCEHTAQNI'] < 0.5)
     
     return df

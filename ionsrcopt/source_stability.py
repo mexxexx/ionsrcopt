@@ -12,11 +12,11 @@ def stability_mean_variance_classification(df, current_column, sliding_window_si
         maximum_variance (double): maximum variance of intensity of the beam in the sliding window for it to be considered stable
 
     Returns:
-        Series: A series that for every data point indicates if the source was running stable or not
+        Series: A series that for every data point indicates if the source was running stable or not (1 is stable, 0 is unstable)
     """
 
     mean = np.array(df[current_column].rolling(sliding_window_size).mean())
     var = np.array(df[current_column].rolling(sliding_window_size).var())
 
-    result = [(m > minimum_mean and v < maximum_variance) if not np.isnan(m) and not np.isnan(v) else '' for (m, v) in zip(mean, var)]
-    return pd.Series(result)
+    result = [int(m > minimum_mean and v < maximum_variance) if not np.isnan(m) and not np.isnan(v) else np.nan for (m, v) in zip(mean, var)]
+    return pd.Series(result, index=df.index)

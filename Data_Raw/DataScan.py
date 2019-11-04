@@ -1,3 +1,5 @@
+
+#%%
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +16,7 @@ matplotlib.use('Qt5Agg')
 
 def main():
     # read data and fill gaps
-    data = pd.read_csv("Nov2018.csv").fillna(method='ffill')
+    data = pd.read_csv("Data_Raw/Nov2018.csv").fillna(method='ffill').sample(100)
 
     # write everything in a file
     # data.to_csv("Nov2018-reformatted.csv")
@@ -75,7 +77,6 @@ def main():
         else:
             print(prop + ': nothing to do')
 
-    @jit
     def plotpairs(datas):
         sns.set(style="white")
         g = sns.PairGrid(datas, diag_sharey=False)
@@ -83,9 +84,11 @@ def main():
         g.map_upper(sns.scatterplot)
         g.map_diag(sns.kdeplot, lw=3)
 
-    #plotpairs(data)
+    plotpairs(data)
 
-    #exit(111)
+main()
+# %%
+    print("TEST")
 
     values = data.to_numpy()
     number_of_values = np.shape(values)[0]

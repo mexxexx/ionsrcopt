@@ -63,6 +63,7 @@ def nearest_neighbour_clustering(histogram_values, bins, density_threshold):
         density_threshold (double): Every bin below this threshold will be discarded as noise
 
     Returns:
+        int: Number of clusters found
         nparray of int: For every bin in the histogram, returns which cluster it belongs to, or -1 if none.
     """
 
@@ -85,7 +86,7 @@ def nearest_neighbour_clustering(histogram_values, bins, density_threshold):
         current_cluster += 1
 
     print("Found {} cluster(s)".format(current_cluster))
-    return clusters
+    return current_cluster, clusters
 
 def create_cluster_frame(histogram_edges, histogram_values, bins, clusters, columns, cluster_column_name='CLUSTER'): 
     """ Constructs a Data Frame from a histogram and cluster results
@@ -126,10 +127,10 @@ def describe_cluster(cluster, columns):
     std = dstats.std
     quantiles = dstats.quantile(0.5, return_pandas=False)
     
-    result_columns = [[mean[i], std[i], cluster[columns[i]].min(), quantiles[0][i], cluster[columns[i]].max()] for i in range(len(columns))]
-    result = list(itertools.chain(*result_columns)) + [cluster['DENSITY'].count(), cluster['DENSITY'].sum()]
+    result_columns = [[mean[i], std[i], std[i] / abs(mean[i]) * 100, cluster[columns[i]].min(), quantiles[0][i], cluster[columns[i]].max()] for i in range(len(columns))]
+    result = list(itertools.chain(*result_columns)) + [cluster['DENSITY'].count(), cluster['DENSITY'].sum() * 100]
     
-    value_columns = [[(col, 'mean'), (col, 'std'), (col, 'min'), (col, 'median'), (col, 'max')] for col in columns]
+    value_columns = [[(col, 'mean'), (col, 'std'), (col, 'varC (%)'), (col, 'min'), (col, 'median'), (col, 'max')] for col in columns]
     index = list(itertools.chain(*value_columns)) + [('DENSITY', 'count'), ('DENSITY', 'total')]
     
     return pd.Series(result, index=pd.MultiIndex.from_tuples(index))

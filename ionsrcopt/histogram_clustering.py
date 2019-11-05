@@ -147,5 +147,5 @@ def describe_clusters(df, columns):
         DataFrame: Descriptive frame sorted by density
     """
 
-    result = df.groupby('CLUSTER').apply(describe_cluster, columns)
+    result = df[columns + ['CLUSTER']].groupby('CLUSTER').apply(describe_cluster, columns)
     return result.sort_values(('DENSITY', 'total'), ascending=0)

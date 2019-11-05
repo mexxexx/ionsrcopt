@@ -1,6 +1,7 @@
 """ Implementation of the Optigrid Algorithm described in "Optimal Grid-Clustering: Towards Breaking the Curse of
 Dimensionality in High-Dimensional Clustering" by Hinneburg and Keim """
 
+import pandas as pd
 import numpy as np
 import random
 from sklearn.neighbors import KernelDensity
@@ -8,7 +9,7 @@ from sklearn.neighbors import KernelDensity
 import itertools
 
 def estimate_distribution(data, cluster_indices, current_dimension, num_steps, bandwidth = 0.2, percentage_of_values=1):
-    num_samples = 5000
+    num_samples = 15000
     sample_size = min(num_samples, len(cluster_indices))
     sample = random.sample(cluster_indices, sample_size)
     datapoints = [[data[ind][current_dimension]] for ind in sample]
@@ -22,7 +23,7 @@ def estimate_distribution(data, cluster_indices, current_dimension, num_steps, b
     return grid, np.exp(log_dens) * percentage_of_values
 
 def create_cuts_kde(data, cluster_indices, q, max_cut_score, noise_level, current_dimension, bandwidth=0.1, resolution=100, percentage_of_values=1):
-    grid, kde = estimate_distribution(data, cluster_indices, current_dimension, resolution, bandwidth=0.2, percentage_of_values=percentage_of_values) 
+    grid, kde = estimate_distribution(data, cluster_indices, current_dimension, resolution, bandwidth=bandwidth, percentage_of_values=percentage_of_values) 
     kde = np.append(kde, 0)
 
     max=[]
@@ -128,7 +129,7 @@ def optigrid(data, d, q, max_cut_score, noise_level, cluster_indices=None, perce
 
     cuts = []
     for i in range(d): # First create all best cuts
-        cuts += create_cuts_kde(data, cluster_indices, q, max_cut_score, noise_level, i, bins, percentage_of_values)
+        cuts += create_cuts_kde(data, cluster_indices, q, max_cut_score, noise_level, current_dimension=i, percentage_of_values=percentage_of_values)
     
     if not cuts:
         return [cluster_indices]
@@ -143,7 +144,7 @@ def optigrid(data, d, q, max_cut_score, noise_level, cluster_indices=None, perce
     for cluster in grid:
         if not cluster:
             continue
-        print(percentage_of_values*len(cluster)/len(cluster_indices))
+        print("In current cluster: {}".format(percentage_of_values*len(cluster)/len(cluster_indices)))
         result += optigrid(data=data, d=d, q=q, max_cut_score=max_cut_score, noise_level=noise_level, cluster_indices=cluster, percentage_of_values=percentage_of_values*len(cluster)/len(cluster_indices)) # Run Optigrid on every subgrid
     
     return result
@@ -169,10 +170,10 @@ def describe_cluster(cluster, columns):
     area = np.prod([maxs[i]-mins[i] for i in range(len(columns))])
     
     result_columns = [[mean[i], std[i], std[i] / abs(mean[i]) * 100, mins[i], quantiles.iloc[0, i], quantiles.iloc[1, i], quantiles.iloc[2, i], maxs[i]] for i in range(len(columns))]
-    result = list(itertools.chain(*result_columns)) + [count, count/area if area != 0 else np.nan]
+    result = list(itertools.chain(*result_columns)) + [count]
     
     value_columns = [[(col, 'mean'), (col, 'std'), (col, 'varC (%)'), (col, 'min'), (col, '25%'), (col, '50%'), (col, '75%'), (col, 'max')] for col in columns]
-    index = list(itertools.chain(*value_columns)) + [('DENSITY', 'count'), ('DENSITY')]
+    index = list(itertools.chain(*value_columns)) + [('DENSITY', 'count')]
     
     return pd.Series(result, index=pd.MultiIndex.from_tuples(index))
 

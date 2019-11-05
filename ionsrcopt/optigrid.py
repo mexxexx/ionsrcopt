@@ -17,7 +17,7 @@ def estimate_distribution(data, cluster_indices, current_dimension, num_steps, b
     max_val = max(datapoints)
     grid = np.linspace(min_val, max_val, num_steps)
     
-    kde = KernelDensity(kernel='epanechnikov', bandwidth=bandwidth, atol=1E-6, rtol=1E-4).fit(datapoints)
+    kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth, atol=1E-6, rtol=1E-4).fit(datapoints)
     log_dens = kde.score_samples(grid)
     return grid, np.exp(log_dens) * percentage_of_values
 

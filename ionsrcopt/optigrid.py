@@ -1,3 +1,4 @@
+# %load ../ionsrcopt/optigrid.py
 """ Implementation of the Optigrid Algorithm described in "Optimal Grid-Clustering: Towards Breaking the Curse of
 Dimensionality in High-Dimensional Clustering" by Hinneburg and Keim """
 
@@ -8,22 +9,27 @@ from sklearn.neighbors import KernelDensity
 
 import itertools
 
+import matplotlib.pyplot as plt
+
 def estimate_distribution(data, cluster_indices, current_dimension, num_steps, bandwidth = 0.2, percentage_of_values=1):
     num_samples = 15000
     sample_size = min(num_samples, len(cluster_indices))
-    sample = random.sample(cluster_indices, sample_size)
-    datapoints = [[data[ind][current_dimension]] for ind in sample]
-    
-    min_val = min(datapoints)
-    max_val = max(datapoints)
-    grid = np.linspace(min_val, max_val, num_steps)
-    
+    sample = np.random.choice(cluster_indices, size=sample_size)
+    datapoints = np.expand_dims(data[sample][:,current_dimension], -1)
+    min_val = np.amin(datapoints)
+    max_val = np.amax(datapoints)
+    grid = np.linspace([min_val], [max_val], num_steps)
     kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth, atol=1E-6, rtol=1E-4).fit(datapoints)
     log_dens = kde.score_samples(grid)
     return grid, np.exp(log_dens) * percentage_of_values
 
 def create_cuts_kde(data, cluster_indices, q, max_cut_score, noise_level, current_dimension, bandwidth=0.1, resolution=100, percentage_of_values=1):
     grid, kde = estimate_distribution(data, cluster_indices, current_dimension, resolution, bandwidth=bandwidth, percentage_of_values=percentage_of_values) 
+    
+    #plt.plot(grid, kde)
+    #plt.title("Current dimension: {}".format(current_dimension))
+    #plt.show()
+    
     kde = np.append(kde, 0)
 
     max=[]
@@ -87,28 +93,18 @@ def create_cuts_histogram(data, cluster_indices, q, max_cut_score, noise_level, 
             best_cuts.append(((edges[current_min_index] + edges[current_min_index+1])/2, current_dimension, current_min)) # cutting plane format: (cutting coordinate, dimension in which we cut, density at minimum)
     return best_cuts
 
-def fill_grid(grid, data, cluster_indices, cuts):
+def fill_grid(data, cluster_indices, cuts):
     """ Partitions the grid based on the selected cuts and assignes each cell the corresponding data points (as indices)"""
-    for ind in cluster_indices:
-        grid_index = 0
-        value = data[ind]
-        for cut in cuts:
-            if value[cut[1]] >= cut[0]:
-                grid_index += 2 ** cut[2]
-        
-        grid[grid_index].append(ind)
+    
+    num_cuts = len(cuts)
+    grid_index = np.zeros(len(cluster_indices))
+    for i, cut in enumerate(cuts):
+        cut_val = 2 ** i
+        grid_index[np.take(np.take(data, cut[1], axis=1), cluster_indices) > cut[0]] += cut_val
 
-def create_bins(data, number_of_bins):
-    mins = np.nanmin(data, axis=0)
-    maxs = np.nanmax(data, axis=0)
-    bins = [[mins[j] + i / number_of_bins * (maxs[j] - mins[j]) for i in range(number_of_bins+1)] for j in range(len(mins))]
-    for i in range(len(mins)):
-        if mins[i] == maxs[i]:
-            bins[i] = [mins[i], mins[i]+1]
+    return [cluster_indices[grid_index==key] for key in range(2**num_cuts)]
 
-    return bins
-
-def optigrid(data, d, q, max_cut_score, noise_level, cluster_indices=None, percentage_of_values=1):
+def optigrid(data, d, q, max_cut_score, noise_level, cluster_indices=np.array([]), percentage_of_values=1):
     """ Main entry point of the algorithm. 
 
     Parameters:
@@ -118,14 +114,13 @@ def optigrid(data, d, q, max_cut_score, noise_level, cluster_indices=None, perce
         q (int): number of cutting planes in each iteration
         max_cut_score (double): The maximum density (percentage) in the density estimation histograms that will be used when creating cutting planes. The lower the more different peaks will be grouped inside one cluster.
         noise_level (double): The background noise, everything below this threshold will not influence the cutting planes. As percentage of density.
-        bins: The bins to use for the histograms in every dimension. If None, then number_of_bins bins will be created per dimension.
     
     Returns:
         list of list of int: Each list in this list represents a cluster. The values are again indices which that the datapoints can be looked up in the data list.
     """
     
-    if not cluster_indices:
-        cluster_indices = list(range(0, len(data)))
+    if cluster_indices.size == 0:
+        cluster_indices = np.array(range(0, len(data)))
 
     cuts = []
     for i in range(d): # First create all best cuts
@@ -135,14 +130,12 @@ def optigrid(data, d, q, max_cut_score, noise_level, cluster_indices=None, perce
         return [cluster_indices]
     
     cuts = sorted(cuts, key=lambda x: x[2]) # Sort the cuts based on the density at the minima
-    cuts = [(cuts[i][0], cuts[i][1], i) for i in range(q)] # and select the q best ones
 
-    grid = [[] for i in range(2 ** q)]
-    fill_grid(grid, data, cluster_indices, cuts) # Fill the subgrid based on the cuts
-
+    grid = fill_grid(data, cluster_indices, cuts[:q]) # Fill the subgrid based on the cuts
+    
     result = []
     for cluster in grid:
-        if not cluster:
+        if cluster.size==0:
             continue
         print("In current cluster: {}".format(percentage_of_values*len(cluster)/len(cluster_indices)))
         result += optigrid(data=data, d=d, q=q, max_cut_score=max_cut_score, noise_level=noise_level, cluster_indices=cluster, percentage_of_values=percentage_of_values*len(cluster)/len(cluster_indices)) # Run Optigrid on every subgrid
@@ -167,7 +160,6 @@ def describe_cluster(cluster, columns):
     maxs = cluster.max(axis=0)
     
     count = cluster.count(axis=0)[0]
-    area = np.prod([maxs[i]-mins[i] for i in range(len(columns))])
     
     result_columns = [[mean[i], std[i], std[i] / abs(mean[i]) * 100, mins[i], quantiles.iloc[0, i], quantiles.iloc[1, i], quantiles.iloc[2, i], maxs[i]] for i in range(len(columns))]
     result = list(itertools.chain(*result_columns)) + [count]

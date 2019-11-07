@@ -1,4 +1,3 @@
-# %load ../ionsrcopt/optigrid.py
 """ Implementation of the Optigrid Algorithm described in "Optimal Grid-Clustering: Towards Breaking the Curse of
 Dimensionality in High-Dimensional Clustering" by Hinneburg and Keim """
 

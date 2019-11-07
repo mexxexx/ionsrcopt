@@ -70,10 +70,6 @@ def convert_column_types(df):
     df = convert_column(df, 'ITL.BCT05:CURRENT', 'float32')
     return df
 
-
-def set_BCT25_current_none(df, condition):
-    df['ITF.BCT25:CURRENT'] = np.select([condition], [np.nan], [df['ITF.BCT25:CURRENT']])
-
 def clean_data(df):
     """ Clean the data of measurements, that are outliers, e.g. spikes in the extraction current.
 
@@ -85,46 +81,25 @@ def clean_data(df):
     """
 
     print("Filtering data...")
-    #df.dropna(inplace=True)
     if 'ITF.BCT15:CURRENT' in df.columns:
-        #df.drop(df[df['ITF.BCT15:CURRENT'] < 0].index, inplace=True)
-        #set_BCT25_current_none(df, 'ITF.BCT15:CURRENT', lambda x: x < 0)  
         df['ITF.BCT25:CURRENT'] = df['ITF.BCT15:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
     if 'ITF.BCT25:CURRENT' in df.columns:
-        #df.drop(df[df['ITF.BCT25:CURRENT'] < 0].index, inplace=True)
-        #set_BCT25_current_none(df, df['ITF.BCT25:CURRENT'] < 0)
         df['ITF.BCT25:CURRENT'] = df['ITF.BCT25:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
     if 'ITH.BCT41:CURRENT' in df.columns:
-        #df.drop(df[df['ITH.BCT41:CURRENT'] < 0].index, inplace=True)
-        #set_BCT25_current_none(df, df['ITH.BCT41:CURRENT'] < 0)
         df['ITF.BCT25:CURRENT'] = df['ITF.BCT41:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
     if 'ITL.BCT05:CURRENT' in df.columns:
-        #df.drop(df[df['ITL.BCT05:CURRENT'] < 0].index, inplace=True)
-        #set_BCT25_current_none(df, df['ITL.BCT05:CURRENT'] < 0)
         df['ITF.BCT25:CURRENT'] = df['ITF.BCT05:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
     if 'IP.NSRCGEN:OVEN1AQNP' in df.columns:
-        #df.drop(df[df['IP.NSRCGEN:OVEN1AQNP'] < 4.5].index, inplace=True)
-        #set_BCT25_current_none(df, df['IP.NSRCGEN:OVEN1AQNP'] < 4.5)
         df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:OVEN1AQNP'].apply(lambda x: np.nan if x < 4.5 else x)
     if 'IP.SOLEXT.ACQUISITION:CURRENT' in df.columns:
-        #df.drop(df[df['IP.SOLEXT.ACQUISITION:CURRENT'] < 1200].index, inplace=True)
-        #set_BCT25_current_none(df, df['IP.SOLEXT.ACQUISITION:CURRENT'] < 1200)
         df['ITF.BCT25:CURRENT'] = df['IP.SOLEXT.ACQUISITION:CURRENT'].apply(lambda x: np.nan if x < 1200 else x)
     if 'IP.NSRCGEN:BIASDISCAQNV' in df.columns:
-        #df.drop(df[df['IP.NSRCGEN:BIASDISCAQNV'] == 0].index, inplace=True)
-        #set_BCT25_current_none(df, df['IP.NSRCGEN:BIASDISCAQNV'] == 0)
         df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:BIASDISCAQNV'].apply(lambda x: np.nan if x == 0 else x)
     if 'IP.SAIREM2:FORWARDPOWER' in df.columns:
-        #df.drop(df[df['IP.SAIREM2:FORWARDPOWER'] < 500].index, inplace=True)
-        #set_BCT25_current_none(df, df['IP.SAIREM2:FORWARDPOWER'] < 500)
         df['ITF.BCT25:CURRENT'] = df['IP.SAIREM2:FORWARDPOWER'].apply(lambda x: np.nan if x < 500 else x)
     if 'IP.NSRCGEN:SOURCEHTAQNI' in df.columns:
-        #df.drop(df[df['IP.NSRCGEN:SOURCEHTAQNI'] > 2.5].index, inplace=True)
-        #set_BCT25_current_none(df, df['IP.NSRCGEN:SOURCEHTAQNI'] > 2.5)
         df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:SOURCEHTAQNI'].apply(lambda x: np.nan if x > 2.5 else x)
     if 'IP.NSRCGEN:SOURCEHTAQNI' in df.columns:
-        #df.drop(df[df['IP.NSRCGEN:SOURCEHTAQNI'] < 0.5].index, inplace=True)
-        #set_BCT25_current_none(df, df['IP.NSRCGEN:SOURCEHTAQNI'] < 0.5)
         df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:SOURCEHTAQNI'].apply(lambda x: np.nan if x < 0.5 else x)
     
     return df

@@ -10,9 +10,8 @@ import itertools
 
 import matplotlib.pyplot as plt
 
-def estimate_distribution(data, cluster_indices, current_dimension, num_steps, bandwidth = 0.2, percentage_of_values=1):
-    num_samples = 15000
-    sample_size = min(num_samples, len(cluster_indices))
+def estimate_distribution(data, cluster_indices, current_dimension, num_steps, bandwidth = 0.2, percentage_of_values=1, num_kde_samples=15000):
+    sample_size = min(num_kde_samples, len(cluster_indices))
     sample = np.random.choice(cluster_indices, size=sample_size)
     datapoints = np.expand_dims(data[sample][:,current_dimension], -1)
     min_val = np.amin(datapoints)
@@ -22,8 +21,8 @@ def estimate_distribution(data, cluster_indices, current_dimension, num_steps, b
     log_dens = kde.score_samples(grid)
     return grid, np.exp(log_dens) * percentage_of_values
 
-def create_cuts_kde(data, cluster_indices, q, max_cut_score, noise_level, current_dimension, bandwidth=0.1, resolution=100, percentage_of_values=1):
-    grid, kde = estimate_distribution(data, cluster_indices, current_dimension, resolution, bandwidth=bandwidth, percentage_of_values=percentage_of_values) 
+def create_cuts_kde(data, cluster_indices, q, max_cut_score, noise_level, current_dimension, bandwidth=0.1, resolution=100, percentage_of_values=1, num_kde_samples=15000):
+    grid, kde = estimate_distribution(data, cluster_indices, current_dimension, resolution, bandwidth=bandwidth, percentage_of_values=percentage_of_values, num_kde_samples=num_kde_samples) 
     
     #plt.plot(grid, kde)
     #plt.title("Current dimension: {}".format(current_dimension))
@@ -181,4 +180,6 @@ def describe_clusters(df, columns):
     """
 
     result = df[columns + ['OPTIGRID_CLUSTER']].groupby('OPTIGRID_CLUSTER').apply(describe_cluster, columns)
+    num_of_datapoints = len(df.index)
+    result[('DENSITY', 'percentage')] = result[('DENSITY', 'count')] / num_of_datapoints * 100
     return result.sort_values(('DENSITY', 'count'), ascending=0)

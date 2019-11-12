@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 def classify_using_std_threshold(values, threshold):
-    """ Classify values nased on the standard deviation exceding a certain threshold """
+    """ Classify values based on the standard deviation exceding a certain threshold """
 
     std = np.std(values)
     return int(std >= threshold)
@@ -17,7 +17,7 @@ def detect_breakdowns(df, column='IP.NSRCGEN:SOURCEHTAQNI', window_size=40, thre
         threshold (double): Threshold for the standard deviation.
     
     Returns: 
-        Series: Series that has ones, wherever a breakdown is found and is zero otherwise
+        np.array: array that has ones, wherever a breakdown is found and is zero otherwise
     """
 
     if not column in df:
@@ -31,6 +31,6 @@ def detect_breakdowns(df, column='IP.NSRCGEN:SOURCEHTAQNI', window_size=40, thre
     for i in range(len(values) - window_size):
         is_breakdown = classify_using_std_threshold(values[i:i+window_size], threshold)
         if is_breakdown:
-            result[(df.index >= min_index + i) & (df.index < min_index + i + window_size)] = 1
+            result[i:(i + window_size)] = 1
 
-    return pd.Series(result, name='is_breakdown')
+    return result

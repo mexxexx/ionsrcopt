@@ -5,6 +5,7 @@
 # Add exceptions
 !.gitignore
 !README.md
+!LICENSE
 
 # Everything in the ionsrcopt directory
 !/ionsrcopt

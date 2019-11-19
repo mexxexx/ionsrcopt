@@ -1,0 +1,26 @@
+# Ignore everything in the root
+/*
+*__pycache__
+
+# Add exceptions
+!.gitignore
+!README.md
+
+# Everything in the ionsrcopt directory
+!/ionsrcopt
+# Everything in the tests directory
+!/tests
+
+# Allow the Preparation Folder, but only specified files
+!/Preparation
+/Preparation/*
+# Data loading notebook
+!/Preparation/Data_Loading.ipynb
+# Preprocessing notebook
+!/Preparation/Preprocessing.ipynb
+
+# Allow the Clustering Folder, but only specified files
+!/Clustering
+/Clustering/*
+# Clustering notebook
+!/Clustering/Optigrid_Clustering.ipynb

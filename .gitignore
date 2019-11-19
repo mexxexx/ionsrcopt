@@ -1,9 +1,1 @@
-*.csv
-Data_Raw/figures/*
-__pycache__/
-*.log
-*_sync_*
-.swanproject
-*.log.*
-.pytest_cache/
-.vscode/*
+*

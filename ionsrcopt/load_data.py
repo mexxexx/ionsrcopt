@@ -68,6 +68,9 @@ def convert_column_types(df):
     df = convert_column(df, 'ITF.BCT25:CURRENT', 'float32')
     df = convert_column(df, 'ITH.BCT41:CURRENT', 'float32')
     df = convert_column(df, 'ITL.BCT05:CURRENT', 'float32')
+    df = convert_column(df, 'source_stable', 'int32')
+    df = convert_column(df, 'is_breakdown', 'int32')
+    df = convert_column(df, 'optigrid_cluster', 'int32')
     return df
 
 def clean_data(df):

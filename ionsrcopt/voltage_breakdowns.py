@@ -23,8 +23,6 @@ def detect_breakdowns(df, column='IP.NSRCGEN:SOURCEHTAQNI', window_size=40, thre
     if not column in df:
         raise ValueError("Error: The column cannot be found in the dataframe.")
 
-    min_index = df.iloc[0].name
-
     result = np.zeros(len(df.index))
     values = df[column].values
 

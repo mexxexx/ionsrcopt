@@ -13,7 +13,7 @@ def detect_breakdowns(df, column='IP.NSRCGEN:SOURCEHTAQNI', window_size=40, thre
     Parameters:
         df (DataFrame): The frame containing the data
         column (string): High voltage current, typically this should be 'IP.NSRCGEN:SOURCEHTAQNI' 
-        window_size (int): Size of the rolling window. Once a breakdown is detected, every value in this window will be set to 1.
+        window_size (int): Size of the rolling window. Once a breakdown is detected, every value in this window will be set to the integer timestamp of the first point inside the breakdown.
         threshold (double): Threshold for the standard deviation.
     
     Returns: 

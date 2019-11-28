@@ -20,9 +20,9 @@ def main():
     count_breakdowns_per_cluster = True # Whether we want to see the number of high voltage breakdowns per cluster or not
 
     parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT', 'IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed
-    statistics = ['mean', 'std'] # Statistics we are interested in
+    statistics = ['50%', 'std', 'avg_dev'] # Statistics we are interested in
 
-    num_clusters_to_visualize = 10 # Number of clusters we want to see
+    num_clusters_to_visualize = 20 # Number of clusters we want to see
 
 
 
@@ -40,11 +40,14 @@ def main():
 
     # Select only the stability interested in
     df = df[df['source_stable'] == source_stability].copy() 
-    num_values = len(df.index)
+    total_duration = df['duration_seconds'].sum() / 3600
+
+    from sklearn.preprocessing import StandardScaler
+    #df[parameters] = StandardScaler().fit_transform(df[parameters].values)
     
     # Describe the clusters
     described = df.groupby('optigrid_cluster').apply(describe_cluster, parameters=parameters)
-    described[('DENSITY', 'percentage')] = described[('DENSITY', 'count')] / num_values * 100
+    described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
     described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace = True)
 
     # Gather statistics to output
@@ -57,24 +60,26 @@ def main():
     print(printable_clusters.round(3))
 
 def describe_cluster(cluster_df, parameters):
-    cluster_duration_in_seconds = get_cluster_duration(cluster_df)
-    cluster_duration_in_hours = cluster_duration_in_seconds / 3600
-
-    values = ['mean', 'std', 'min', '25%', '50%', '75%', 'max']
+    values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
     index = pd.MultiIndex.from_tuples([(p, v) for p in parameters for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
     
     data = cluster_df[parameters].values # TODO maybe only include non breakdown here???s
+
     mean = np.mean(data, axis=0)
     std = np.std(data, axis=0)
     quantiles = np.quantile(data, [0, 0.25, 0.5, 0.75, 1], axis=0)
+    avg_dev = np.mean(np.absolute(data - mean), axis=0)
 
     count = len(data)
 
-    description = [[mean[i], std[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(parameters))]
+    duration_in_seconds = cluster_df['duration_seconds'].sum()
+    duration_in_hours = duration_in_seconds  / 3600
+
+    description = [[mean[i], std[i], avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(parameters))]
     description = [item for sublist in description for item in sublist]
     description.append(count)
-    description.append(cluster_duration_in_hours)
-    description.append(cluster_df.loc[cluster_df['is_breakdown'] > 0, 'is_breakdown'].nunique() / cluster_duration_in_hours)
+    description.append(duration_in_hours)
+    description.append(cluster_df.loc[cluster_df['is_breakdown'] > 0, 'is_breakdown'].nunique() / duration_in_hours)
     
     return pd.Series(description, index=index)
 
@@ -85,8 +90,8 @@ def get_cluster_duration(cluster_df):
     
     duration = 0
     for start, end in zip(continuous_interval_beginning_points, continuous_interval_end_points):
-        time_start = cluster_df.loc[start, 'Timestamp (UTC_TIME)']
-        time_end = cluster_df.loc[end, 'Timestamp (UTC_TIME)']
+        time_start = cluster_df.loc[start, 'Timestamp']
+        time_end = cluster_df.loc[end, 'Timestamp']
         delta = time_end - time_start
         duration += delta.total_seconds()
 

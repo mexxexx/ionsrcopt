@@ -14,7 +14,7 @@ def export_for_annotation(filename, column_to_export, rows):
         rows (list of range): Ranges of the rows to be extracted, all are going to be saved in seperate files in Data_Annotated/
     """
     filename_without_ext = os.path.splitext(os.path.basename(filename))[0]
-    df = ld.read_data_from_csv(filename, ['Timestamp (UTC_TIME)', column_to_export], None)
+    df = ld.read_data_from_csv(filename, ['Timestamp', column_to_export], None)
     df.insert(0, 'filename', 'f')
     df['label'] = 0
     df.columns = ['filename', 'timestamp', 'value', 'label']

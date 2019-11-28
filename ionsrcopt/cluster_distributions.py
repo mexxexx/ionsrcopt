@@ -7,7 +7,7 @@ import contextlib
 import io
 import sys
 
-from sklearn.neighbors import KernelDensity
+from scipy.stats import gaussian_kde
 
 import load_data as ld
 
@@ -20,7 +20,7 @@ def main():
     filename = 'Nov2016.csv' # The file to load
 
     source_stability = 1 # 1 if we want to look at a stable source, 0 else
-    cluster = 4 # The cluster to plot or None if you want to plot all data
+    cluster = None # The cluster to plot or None if you want to plot all data
 
     parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT', 'IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed    
 
@@ -45,16 +45,16 @@ def main():
         bandwidth *= 0.2
     num_kde_samples = 40000
 
-    plot_cluster(df.values, parameters, parameter_ranges=None, median=None, resolution=resolution, bandwidth=bandwidth, num_kde_samples=num_kde_samples, cluster=cluster)
+    plot_cluster(df.values, None, parameters, parameter_ranges=None, median=None, resolution=resolution, bandwidth=bandwidth, num_kde_samples=num_kde_samples, cluster=cluster)
 
-def plot_cluster(data, parameters, parameter_ranges, median, resolution, bandwidth, num_kde_samples, cluster):
+def plot_cluster(data, weights, parameters, parameter_ranges, median, resolution, bandwidth, num_kde_samples, cluster):
     if isinstance(bandwidth, float):
         bandwidth = [bandwidth for i in range(len(parameters))]
     
     fig = plt.figure()
     
     for i, parameter in enumerate(parameters):
-        grid, kde = estimate_distribution(data, i, resolution, bandwidth=bandwidth[i], num_kde_samples=num_kde_samples)
+        grid, kde = estimate_distribution(data, weights, i, resolution, bandwidth=bandwidth[i], num_kde_samples=num_kde_samples)
         ax = plt.subplot('{}1{}'.format(len(parameters), i+1))
         ax.set_title("{}".format(parameter))
         ax.tick_params(axis='both', which='major')
@@ -73,16 +73,25 @@ def plot_cluster(data, parameters, parameter_ranges, median, resolution, bandwid
     plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.93, wspace=None, hspace=0.4)
     plt.show()
 
-def estimate_distribution(data, current_dimension, num_steps, bandwidth = 0.1, num_kde_samples=15000):
+def estimate_distribution(data, weights, current_dimension, num_steps, bandwidth = 0.1, num_kde_samples=15000):
     sample_size = min(num_kde_samples, len(data))
     sample = np.random.randint(0, len(data), size=sample_size)
-    datapoints = np.expand_dims(data[sample, current_dimension], -1)
+    #datapoints = np.expand_dims(data[sample, current_dimension], -1)
+    datapoints = data[sample, current_dimension]
+
+    weights_sample = None
+    if not weights is None:
+        weights_sample = weights[sample]
+
     min_val = np.amin(datapoints)
     max_val = np.amax(datapoints)
-    grid = np.linspace([min_val], [max_val], num_steps)
-    kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth, atol=1E-6, rtol=1E-4).fit(datapoints)
-    log_dens = kde.score_samples(grid)
-    return grid, np.exp(log_dens)
+    grid = np.linspace(min_val, max_val, num_steps)
+    #kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth, atol=1E-6, rtol=1E-4).fit(datapoints)
+
+    kde = gaussian_kde(dataset=datapoints, bw_method=bandwidth / datapoints.std(ddof=1), weights=weights_sample)
+    dens = kde.evaluate(grid)
+    #log_dens = kde.score_samples(grid)
+    return grid, dens
 
 ### This is used to supress output to the console
 class DummyFile(object):

@@ -18,6 +18,8 @@ def read_data_from_csv(filename, cols_to_read, rows_to_read):
         df = pd.read_csv(filename).fillna(method='ffill')
     else:
         df = pd.read_csv(filename, usecols=cols_to_read).fillna(method='ffill')
+    
+    df = df.rename(columns={'Timestamp (UTC_TIME)' : 'Timestamp'})
 
     if rows_to_read is None:
         return df
@@ -40,7 +42,7 @@ def convert_column(df, column, type):
         print("Converting column \'{}\' to \'{}\'".format(column, type))
         return df.astype({column:type})
     else:
-        print("Column \'{}\' does not exist".format(column))
+        #print("Column \'{}\' does not exist".format(column))
         return df
 
 def convert_column_types(df):
@@ -54,9 +56,10 @@ def convert_column_types(df):
     """
 
     print("Started type conversion of columns...")
-    if 'Timestamp (UTC_TIME)' in df.columns:
-        print("Converting column \'{}\' to \'{}\'".format('Timestamp (UTC_TIME)', 'datetime'))
-        df['Timestamp (UTC_TIME)'] = pd.to_datetime(df['Timestamp (UTC_TIME)']) 
+    if 'Timestamp' in df.columns:
+        print("Converting column \'{}\' to \'{}\'".format('Timestamp', 'datetime'))
+        df['Timestamp'] = pd.to_datetime(df['Timestamp']) 
+        df = df.set_index(pd.DatetimeIndex(df['Timestamp']))
     df = convert_column(df, 'IP.NSRCGEN:BIASDISCAQNV', 'float32')
     df = convert_column(df, 'IP.NSRCGEN:GASSASAQN', 'float32')
     df = convert_column(df, 'IP.NSRCGEN:SOURCEHTAQNI', 'float32')
@@ -70,6 +73,7 @@ def convert_column_types(df):
     df = convert_column(df, 'ITL.BCT05:CURRENT', 'float32')
     df = convert_column(df, 'source_stable', 'int32')
     df = convert_column(df, 'is_breakdown', 'int32')
+    df = convert_column(df, 'duration_seconds', 'float32')
     df = convert_column(df, 'optigrid_cluster', 'int32')
     return df
 

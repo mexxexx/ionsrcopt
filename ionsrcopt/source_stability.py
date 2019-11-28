@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 def stability_mean_variance_classification(df, current_column, sliding_window_size=5000, minimum_mean=0.025, maximum_variance=0.00005):
-    """ Classifies all point in the data frame into the categories source stable/unstable, based on a rolling window and a minimum mean and maximum variance in this window.
+    """ Classifies all points in the data frame into the categories source stable/unstable, based on a rolling window and a minimum mean and maximum variance in this window.
 
     Parameters:
         df (DataFrame): The data input loaded as a DataFrame

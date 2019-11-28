@@ -22,7 +22,7 @@ def main():
     ######## CODE ########
     ######################
 
-    columns = ['Timestamp (UTC_TIME)', 'ITF.BCT25:CURRENT', 'source_stable'] 
+    columns = ['Timestamp', 'ITF.BCT25:CURRENT', 'source_stable'] 
 
     # Load file into a data frame
     path = clustered_data_folder + filename
@@ -31,12 +31,11 @@ def main():
         df = ld.convert_column_types(df)
     df.dropna()    
     
-
-    dates_stable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 1, 'Timestamp (UTC_TIME)'].values)
-    dates_unstable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 0, 'Timestamp (UTC_TIME)'].values)
+    dates_stable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 1, 'Timestamp'].values)
+    dates_unstable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 0, 'Timestamp'].values)
 
     fig = plt.figure()
-    ax = plt.subplot('111')
+    ax = fig.add_subplot('111')
     ax.set_title("{}".format(filename))
     ax.plot_date(dates_stable, df.loc[df['source_stable'] == 1, 'ITF.BCT25:CURRENT'].values, fmt='.', c='orange')
     ax.plot_date(dates_unstable, df.loc[df['source_stable'] == 0, 'ITF.BCT25:CURRENT'].values, fmt='.', c='blue')
@@ -59,4 +58,4 @@ def nostdout():
     sys.stdout = save_stdout
 
 if __name__ == "__main__":
-    main()
+    main() 

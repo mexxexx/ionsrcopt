@@ -20,7 +20,7 @@ def main():
     source_stability = 1 # 1 if we want to look at a stable source, 0 else
     cluster = 16 # The cluster to plot or None if you want to plot all data
 
-    parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN','IP.SOLCEN.ACQUISITION:CURRENT'] #['IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed    
+    parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT','IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed    
 
     ######################
     ######## CODE ########
@@ -39,12 +39,11 @@ def main():
 
     dates = matplotlib.dates.date2num(df.index.values)
 
-    fig = plt.figure()
+    fig, ax = plt.subplots(len(parameters), 1, sharex=True)
     for i, parameter in enumerate(parameters):
-        ax = plt.subplot('{}1{}'.format(len(parameters), i+1))
-        ax.set_title("{}".format(parameter))
-        ax.tick_params(axis='both', which='major')
-        ax.plot_date(dates, df[parameter].values, fmt='.')
+        ax[i].set_title("{}".format(parameter))
+        ax[i].tick_params(axis='both', which='major')
+        ax[i].plot_date(dates, df[parameter].values, fmt='.')
 
     figManager = plt.get_current_fig_manager()
     figManager.window.showMaximized()

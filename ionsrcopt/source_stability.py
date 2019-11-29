@@ -17,22 +17,19 @@ def stability_mean_variance_classification(df, value_column, weight_column, slid
 
     df['wvalue'] = df[value_column] * df[weight_column]
 
-    #mean = df.rolling(, min_periods=1, ).apply(time_weighted_mean)[current_column].shift(-sliding_window_size_mean // 2, freq='s').values
     mean_weight_sum = df[['wvalue', weight_column]].rolling('{}s'.format(sliding_window_size_mean), closed='left').sum()
-    mean_weight_sum = mean_weight_sum.shift(-sliding_window_size_mean // 2, freq='s')
     wmean = mean_weight_sum['wvalue'] / mean_weight_sum[weight_column]
     wmean.name = 'wmean'
 
     df['wdeviation'] = df[value_column] - wmean
     df['wdeviation'] = df['wdeviation'] ** 2
     df['wdeviation'] *= df[weight_column]
-    var_weight_sum = df[['wdeviation', weight_column]].rolling('{}s'.format(sliding_window_size_mean), closed='left').sum().shift(-sliding_window_size_mean // 2, freq='s')
+    var_weight_sum = df[['wdeviation', weight_column]].rolling('{}s'.format(sliding_window_size_mean), closed='left').sum()
     wvar = var_weight_sum['wdeviation'] / (var_weight_sum[weight_column] - 1)
     wvar.name = 'wvar'
 
     df.drop(['wvalue', 'wdeviation'], axis=1, inplace=True)
 
-    #result = [int(m > minimum_mean and v < maximum_variance) if not np.isnan(m) and not np.isnan(v) else np.nan for (m, v) in zip(wmean, wvar)]
     stats = pd.concat([wmean, wvar], axis=1)
     stats['result'] = 0
     stats.loc[(stats['wmean'] > minimum_mean) & (stats['wvar'] < maximum_variance), 'result'] = 1

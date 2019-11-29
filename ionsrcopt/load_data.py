@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
 
-def read_data_from_csv(filename, cols_to_read, rows_to_read):
+def read_data_from_csv(filenames, cols_to_read, rows_to_read):
     """ Read a csv file into a DataFrame
 
     Parameters:
-        filename (string): Filename
+        filenames (list string): Filenames. Concatenates all into one data frame
         cols_to_read (list of string): The column names to read, None if everything should be read
         rows_to_read (list of int): The rown numbers to read, None if everything should be read
 
@@ -13,18 +13,38 @@ def read_data_from_csv(filename, cols_to_read, rows_to_read):
         DataFrame
     """
 
-    print("Loading data from csv file \'{}\'".format(filename))
-    if cols_to_read is None:
-        df = pd.read_csv(filename).fillna(method='ffill')
-    else:
-        df = pd.read_csv(filename, usecols=cols_to_read).fillna(method='ffill')
-    
-    df = df.rename(columns={'Timestamp (UTC_TIME)' : 'Timestamp'})
+    if isinstance(filenames, str):
+        filenames = [filenames]
 
-    if rows_to_read is None:
-        return df
-    else:
-        return df.iloc[rows_to_read]
+    dfs = []
+
+    for filename in filenames:
+        print("Loading data from csv file \'{}\'".format(filename))
+
+        try:
+            if cols_to_read is None:
+                df = pd.read_csv(filename).fillna(method='ffill')
+            else:
+                df = pd.read_csv(filename, usecols=cols_to_read).fillna(method='ffill')
+        except:
+            print("File {} does not exist or is not a csv file". format(filename))
+            exit()
+
+        if not ('Timestamp' in df.columns or 'Timestamp (UTC_TIME)' in df.columns):
+            print("No timestamp column was found. It must be named either \'Timestamp\' or \'Timestamp (UTC_TIME)\'.")
+            exit()
+
+        df = df.rename(columns={'Timestamp (UTC_TIME)' : 'Timestamp'})
+        df['Timestamp'] = pd.to_datetime(df['Timestamp']) 
+        df = df.set_index('Timestamp')
+        
+        if not rows_to_read is None:
+            df = df.iloc[rows_to_read].copy()
+
+        dfs.append(df)        
+
+    result = pd.concat(dfs, axis=0, sort=False)
+    return result.sort_index() 
 
 def convert_column(df, column, type):
     """ Converts the dtype of a column
@@ -56,14 +76,11 @@ def convert_column_types(df):
     """
 
     print("Started type conversion of columns...")
-    if 'Timestamp' in df.columns:
-        print("Converting column \'{}\' to \'{}\'".format('Timestamp', 'datetime'))
-        df['Timestamp'] = pd.to_datetime(df['Timestamp']) 
-        df = df.set_index('Timestamp')
     df = convert_column(df, 'IP.NSRCGEN:BIASDISCAQNV', 'float32')
     df = convert_column(df, 'IP.NSRCGEN:GASSASAQN', 'float32')
     df = convert_column(df, 'IP.NSRCGEN:SOURCEHTAQNI', 'float32')
     df = convert_column(df, 'IP.SAIREM2:FORWARDPOWER', 'float32')
+    df = convert_column(df, 'IP.NSRCGEN:OVEN1AQNP', 'float32')
     df = convert_column(df, 'IP.SOLCEN.ACQUISITION:CURRENT', 'float32')
     df = convert_column(df, 'IP.SOLEXT.ACQUISITION:CURRENT', 'float32')
     df = convert_column(df, 'IP.SOLINJ.ACQUISITION:CURRENT', 'float32')

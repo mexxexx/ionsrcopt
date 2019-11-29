@@ -6,6 +6,8 @@ import contextlib
 import io
 import sys
 
+from statsmodels.stats.weightstats import DescrStatsW
+
 import load_data as ld
 
 def main():
@@ -46,7 +48,7 @@ def main():
     #df[parameters] = StandardScaler().fit_transform(df[parameters].values)
     
     # Describe the clusters
-    described = df.groupby('optigrid_cluster').apply(describe_cluster, parameters=parameters)
+    described = df.groupby('optigrid_cluster').apply(describe_cluster, parameters=parameters, weight_column='duration_seconds')
     described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
     described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace = True)
 
@@ -59,21 +61,24 @@ def main():
     print("Sum of densities of printed clusters: {:.1f}%".format(printable_clusters[('DENSITY', 'percentage')].sum()))
     print(printable_clusters.round(3))
 
-def describe_cluster(cluster_df, parameters):
+def describe_cluster(cluster_df, parameters, weight_column):
     values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
     index = pd.MultiIndex.from_tuples([(p, v) for p in parameters for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
     
-    data = cluster_df[parameters].values # TODO maybe only include non breakdown here???s
+    data = cluster_df[parameters].values # TODO maybe only include non breakdown here???
+    weights = cluster_df[weight_column].values
 
-    mean = np.mean(data, axis=0)
-    std = np.std(data, axis=0)
-    quantiles = np.quantile(data, [0, 0.25, 0.5, 0.75, 1], axis=0)
-    avg_dev = np.mean(np.absolute(data - mean), axis=0)
+    stats = DescrStatsW(data, weights, ddof=1)
+
+    mean = np.array(stats.mean) #np.mean(data, axis=0)
+    std = np.array(stats.std) #np.std(data, axis=0)
+    quantiles = stats.quantile([0, 0.25, 0.5, 0.75, 1], return_pandas=False) #np.quantile(data, [0, 0.25, 0.5, 0.75, 1], axis=0)
+    avg_dev = np.dot(weights, np.absolute(data - mean)) / np.sum(weights)
 
     count = len(data)
 
     duration_in_seconds = cluster_df['duration_seconds'].sum()
-    duration_in_hours = duration_in_seconds  / 3600
+    duration_in_hours = duration_in_seconds / 3600
 
     description = [[mean[i], std[i], avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(parameters))]
     description = [item for sublist in description for item in sublist]

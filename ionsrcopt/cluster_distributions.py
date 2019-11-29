@@ -76,7 +76,6 @@ def plot_cluster(data, weights, parameters, parameter_ranges, median, resolution
 def estimate_distribution(data, weights, current_dimension, num_steps, bandwidth = 0.1, num_kde_samples=15000):
     sample_size = min(num_kde_samples, len(data))
     sample = np.random.randint(0, len(data), size=sample_size)
-    #datapoints = np.expand_dims(data[sample, current_dimension], -1)
     datapoints = data[sample, current_dimension]
 
     weights_sample = None
@@ -86,11 +85,9 @@ def estimate_distribution(data, weights, current_dimension, num_steps, bandwidth
     min_val = np.amin(datapoints)
     max_val = np.amax(datapoints)
     grid = np.linspace(min_val, max_val, num_steps)
-    #kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth, atol=1E-6, rtol=1E-4).fit(datapoints)
 
     kde = gaussian_kde(dataset=datapoints, bw_method=bandwidth / datapoints.std(ddof=1), weights=weights_sample)
     dens = kde.evaluate(grid)
-    #log_dens = kde.score_samples(grid)
     return grid, dens
 
 ### This is used to supress output to the console

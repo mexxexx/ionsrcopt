@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def stability_mean_variance_classification(df, current_column, sliding_window_size=5000, minimum_mean=0.025, maximum_variance=0.00005):
+def stability_mean_variance_classification(df, value_column, weight_column, sliding_window_size_mean=500, sliding_window_size_std=1000, minimum_mean=0.025, maximum_variance=0.00005):
     """ Classifies all points in the data frame into the categories source stable/unstable, based on a rolling window and a minimum mean and maximum variance in this window.
 
     Parameters:
@@ -15,8 +15,26 @@ def stability_mean_variance_classification(df, current_column, sliding_window_si
         Series: A series that for every data point indicates if the source was running stable or not (1 is stable, 0 is unstable)
     """
 
-    mean = np.array(df[current_column].rolling(sliding_window_size).mean())
-    var = np.array(df[current_column].rolling(sliding_window_size).var())
+    df['wvalue'] = df[value_column] * df[weight_column]
 
-    result = [int(m > minimum_mean and v < maximum_variance) if not np.isnan(m) and not np.isnan(v) else np.nan for (m, v) in zip(mean, var)]
-    return pd.Series(result, index=df.index)
+    #mean = df.rolling(, min_periods=1, ).apply(time_weighted_mean)[current_column].shift(-sliding_window_size_mean // 2, freq='s').values
+    mean_weight_sum = df[['wvalue', weight_column]].rolling('{}s'.format(sliding_window_size_mean), closed='left').sum()
+    mean_weight_sum = mean_weight_sum.shift(-sliding_window_size_mean // 2, freq='s')
+    wmean = mean_weight_sum['wvalue'] / mean_weight_sum[weight_column]
+    wmean.name = 'wmean'
+
+    df['wdeviation'] = df[value_column] - wmean
+    df['wdeviation'] = df['wdeviation'] ** 2
+    df['wdeviation'] *= df[weight_column]
+    var_weight_sum = df[['wdeviation', weight_column]].rolling('{}s'.format(sliding_window_size_mean), closed='left').sum().shift(-sliding_window_size_mean // 2, freq='s')
+    wvar = var_weight_sum['wdeviation'] / (var_weight_sum[weight_column] - 1)
+    wvar.name = 'wvar'
+
+    df.drop(['wvalue', 'wdeviation'], axis=1, inplace=True)
+
+    #result = [int(m > minimum_mean and v < maximum_variance) if not np.isnan(m) and not np.isnan(v) else np.nan for (m, v) in zip(wmean, wvar)]
+    stats = pd.concat([wmean, wvar], axis=1)
+    stats['result'] = 0
+    stats.loc[(stats['wmean'] > minimum_mean) & (stats['wvar'] < maximum_variance), 'result'] = 1
+
+    return stats['result']

@@ -59,7 +59,7 @@ def convert_column_types(df):
     if 'Timestamp' in df.columns:
         print("Converting column \'{}\' to \'{}\'".format('Timestamp', 'datetime'))
         df['Timestamp'] = pd.to_datetime(df['Timestamp']) 
-        df = df.set_index(pd.DatetimeIndex(df['Timestamp']))
+        df = df.set_index('Timestamp')
     df = convert_column(df, 'IP.NSRCGEN:BIASDISCAQNV', 'float32')
     df = convert_column(df, 'IP.NSRCGEN:GASSASAQN', 'float32')
     df = convert_column(df, 'IP.NSRCGEN:SOURCEHTAQNI', 'float32')

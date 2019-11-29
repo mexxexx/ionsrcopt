@@ -27,7 +27,7 @@ def detect_breakdowns(df, column='IP.NSRCGEN:SOURCEHTAQNI', window_size=40, thre
     values = df[column].values
 
     for i in range(len(values) - window_size):
-        is_breakdown = classify_using_std_threshold(values[i:i+window_size], threshold)
+        is_breakdown = classify_using_std_threshold(values[i:i+window_size], threshold) #TODO: Change to time weighted windows
         if is_breakdown:
             result[i:(i + window_size)] = 1
 

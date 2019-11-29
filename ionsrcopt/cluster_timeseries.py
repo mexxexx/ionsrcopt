@@ -18,7 +18,7 @@ def main():
     filename = 'Nov2018.csv' # The file to load
 
     source_stability = 1 # 1 if we want to look at a stable source, 0 else
-    cluster = 5 # The cluster to plot or None if you want to plot all data
+    cluster = 16 # The cluster to plot or None if you want to plot all data
 
     parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN','IP.SOLCEN.ACQUISITION:CURRENT'] #['IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed    
 
@@ -35,9 +35,9 @@ def main():
 
     if cluster is not None:
         df = df[df['optigrid_cluster'] == cluster].copy()
-    df = df.loc[df['source_stable'] == source_stability, ['Timestamp'] + parameters].copy()
+    df = df.loc[df['source_stable'] == source_stability, parameters].copy()
 
-    dates = matplotlib.dates.date2num(df['Timestamp'].values)
+    dates = matplotlib.dates.date2num(df.index.values)
 
     fig = plt.figure()
     for i, parameter in enumerate(parameters):

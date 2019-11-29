@@ -31,8 +31,8 @@ def main():
         df = ld.convert_column_types(df)
     df.dropna()    
     
-    dates_stable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 1, 'Timestamp'].values)
-    dates_unstable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 0, 'Timestamp'].values)
+    dates_stable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 1].index.values)
+    dates_unstable = matplotlib.dates.date2num(df.loc[df['source_stable'] == 0].index.values)
 
     fig = plt.figure()
     ax = fig.add_subplot('111')

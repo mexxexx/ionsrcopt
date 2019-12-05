@@ -8,6 +8,8 @@ import sys
 
 from statsmodels.stats.weightstats import DescrStatsW
 
+import argparse
+
 import load_data as ld
 
 def main():
@@ -16,18 +18,16 @@ def main():
     ######################
 
     clustered_data_folder = 'Data_Clustered/' # Base folder of clustered data
-    filename = 'Nov2018.csv' # The file to load
+    filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    source_stability = 1 # 1 if we want to look at a stable source, 0 else
-    count_breakdowns_per_cluster = True # Whether we want to see the number of high voltage breakdowns per cluster or not
+    args = parse_args()
+    source_stability = args['source_stability']
+    count_breakdowns_per_cluster = args['count_breakdowns_per_cluster']
+    num_clusters_to_visualize = args['num_clusters_to_visualize']
 
     parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT', 'IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed
     statistics = ['50%', 'std', 'avg_dev'] # Statistics we are interested in
-
-    num_clusters_to_visualize = 20 # Number of clusters we want to see
-
-
-
+ 
 
     ######################
     ######## CODE ########
@@ -53,7 +53,7 @@ def main():
     described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace = True)
 
     # Gather statistics to output
-    wanted_statistics = get_wanted_statistics(parameters, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours')]
+    wanted_statistics = get_wanted_statistics(parameters, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours')] 
     if count_breakdowns_per_cluster:
         wanted_statistics += [('num_breakdowns', 'per_hour')]
 
@@ -65,8 +65,8 @@ def describe_cluster(cluster_df, parameters, weight_column):
     values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
     index = pd.MultiIndex.from_tuples([(p, v) for p in parameters for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
     
-    data = cluster_df[parameters].values # TODO maybe only include non breakdown here???
-    weights = cluster_df[weight_column].values
+    data = cluster_df.loc[(cluster_df['duration_seconds'] < 60) & (cluster_df['is_breakdown'] == 0), parameters].values # TODO maybe only include non breakdown here???
+    weights = cluster_df.loc[(cluster_df['duration_seconds'] < 60) & (cluster_df['is_breakdown'] == 0), weight_column].values
 
     stats = DescrStatsW(data, weights, ddof=1)
 
@@ -118,6 +118,18 @@ def get_wanted_statistics(parameters, statistics):
     result = [[(param, stat) for stat in statistics] for param in parameters]
     result = [item for sublist in result for item in sublist]
     return result
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Describe clusters')
+    parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
+    parser.add_argument('-b', '--count_breakdowns_per_cluster', default=True, type=bool, help='Count how many breakdowns occur per cluster, True or False')
+    parser.add_argument('-v', '--num_clusters_to_visualize', default=20, type=int, help='How many clusters shall be displayed')
+
+    args = parser.parse_args()
+
+    return {'source_stability' : args.source_stability, 
+            'count_breakdowns_per_cluster' : args.count_breakdowns_per_cluster,
+            'num_clusters_to_visualize' : args.num_clusters_to_visualize}
 
 ### This is used to supress output to the console
 class DummyFile(object):

@@ -9,6 +9,7 @@ import sys
 
 from scipy.stats import gaussian_kde
 
+sys.path.insert(1, '../ionsrcopt')
 import load_data as ld
 
 def main():

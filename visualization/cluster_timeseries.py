@@ -9,6 +9,7 @@ import sys
 
 import argparse
 
+sys.path.insert(1, '../ionsrcopt')
 import load_data as ld
 
 def main():

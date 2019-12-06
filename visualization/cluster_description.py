@@ -10,7 +10,8 @@ from statsmodels.stats.weightstats import DescrStatsW
 
 import argparse
 
-import load_data as ld
+sys.path.insert(1, '../ionsrcopt')
+from ionsrcopt import load_data as ld
 
 def main():
     ######################
@@ -20,14 +21,13 @@ def main():
     clustered_data_folder = 'Data_Clustered/' # Base folder of clustered data
     filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
+    features = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT', 'IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Features to be displayed
+    statistics = ['50%', 'std', 'avg_dev'] # Statistics we are interested in
+ 
     args = parse_args()
     source_stability = args['source_stability']
     count_breakdowns_per_cluster = args['count_breakdowns_per_cluster']
     num_clusters_to_visualize = args['num_clusters_to_visualize']
-
-    parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT', 'IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed
-    statistics = ['50%', 'std', 'avg_dev'] # Statistics we are interested in
- 
 
     ######################
     ######## CODE ########
@@ -43,17 +43,14 @@ def main():
     # Select only the stability interested in
     df = df[df['source_stable'] == source_stability].copy() 
     total_duration = df['duration_seconds'].sum() / 3600
-
-    from sklearn.preprocessing import StandardScaler
-    #df[parameters] = StandardScaler().fit_transform(df[parameters].values)
     
     # Describe the clusters
-    described = df.groupby('optigrid_cluster').apply(describe_cluster, parameters=parameters, weight_column='duration_seconds')
+    described = df.groupby('optigrid_cluster').apply(describe_cluster, features=features, weight_column='duration_seconds')
     described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
     described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace = True)
 
     # Gather statistics to output
-    wanted_statistics = get_wanted_statistics(parameters, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours')] 
+    wanted_statistics = get_wanted_statistics(features, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours')] 
     if count_breakdowns_per_cluster:
         wanted_statistics += [('num_breakdowns', 'per_hour')]
 
@@ -61,11 +58,11 @@ def main():
     print("Sum of densities of printed clusters: {:.1f}%".format(printable_clusters[('DENSITY', 'percentage')].sum()))
     print(printable_clusters.round(3))
 
-def describe_cluster(cluster_df, parameters, weight_column):
+def describe_cluster(cluster_df, features, weight_column):
     values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
-    index = pd.MultiIndex.from_tuples([(p, v) for p in parameters for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
+    index = pd.MultiIndex.from_tuples([(p, v) for p in features for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
     
-    data = cluster_df.loc[(cluster_df['duration_seconds'] < 60) & (cluster_df['is_breakdown'] == 0), parameters].values # TODO maybe only include non breakdown here???
+    data = cluster_df.loc[(cluster_df['duration_seconds'] < 60) & (cluster_df['is_breakdown'] == 0), features].values # TODO maybe only include non breakdown here???
     weights = cluster_df.loc[(cluster_df['duration_seconds'] < 60) & (cluster_df['is_breakdown'] == 0), weight_column].values
 
     stats = DescrStatsW(data, weights, ddof=1)
@@ -80,7 +77,7 @@ def describe_cluster(cluster_df, parameters, weight_column):
     duration_in_seconds = cluster_df['duration_seconds'].sum()
     duration_in_hours = duration_in_seconds / 3600
 
-    description = [[mean[i], std[i], avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(parameters))]
+    description = [[mean[i], std[i], avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(features))]
     description = [item for sublist in description for item in sublist]
     description.append(count)
     description.append(duration_in_hours)
@@ -114,8 +111,8 @@ def np_shift(arr, num, fill_value=np.nan):
         result[:] = arr
     return result
 
-def get_wanted_statistics(parameters, statistics):
-    result = [[(param, stat) for stat in statistics] for param in parameters]
+def get_wanted_statistics(features, statistics):
+    result = [[(param, stat) for stat in statistics] for param in features]
     result = [item for sublist in result for item in sublist]
     return result
 

@@ -11,6 +11,8 @@
 !/ionsrcopt
 # Everything in the tests directory
 !/tests
+# Allow everythin in the vsiaulization directory
+!/visualization
 
 # Allow the Preparation Folder, but only specified files
 !/Preparation
@@ -25,6 +27,3 @@
 /Clustering/*
 # Clustering notebook
 !/Clustering/Optigrid_Clustering.ipynb
-
-!/wikis
-!/wikis/*

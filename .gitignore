@@ -25,3 +25,6 @@
 /Clustering/*
 # Clustering notebook
 !/Clustering/Optigrid_Clustering.ipynb
+
+!/wikis
+!/wikis/*

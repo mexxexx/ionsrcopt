@@ -6,25 +6,38 @@ import numpy as np
 import contextlib
 import io
 import sys
+import os
 
 import argparse
 
-sys.path.insert(1, '../ionsrcopt')
+sys.path.insert(1, os.path.abspath('../ionsrcopt'))
 import load_data as ld
+from source_features import SourceFeatures
+from processing_features import ProcessingFeatures
 
 def main():
     ######################
     ###### SETTINGS ######
     ######################
 
-    clustered_data_folder = 'Data_Clustered/' # Base folder of clustered data 
+    clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
     filename = 'JanNov2018_lowbandwidth.csv' # The file to load
+    
+    features = [
+        SourceFeatures.BIASDISCAQNV, 
+        SourceFeatures.GASAQN, 
+        SourceFeatures.OVEN1AQNP,
+        SourceFeatures.SAIREM2_FORWARDPOWER,
+        SourceFeatures.SOLINJ_CURRENT,
+        SourceFeatures.SOLCEN_CURRENT,
+        SourceFeatures.SOLEXT_CURRENT,
+        SourceFeatures.SOURCEHTAQNI,
+        SourceFeatures.BCT25_CURRENT] # Features to be displayed 
 
     args = parse_args()
     source_stability = args['source_stability']
     cluster = args['cluster']
-
-    parameters = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT','IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Parameters to be displayed    
+    show_breakdows = args['show_breakdows']
 
     ######################
     ######## CODE ########
@@ -38,16 +51,19 @@ def main():
     df.dropna()    
 
     if cluster is not None:
-        df = df[(df['optigrid_cluster'] == cluster)  & (df['is_breakdown'] == 0)].copy()
-    df = df.loc[df['source_stable'] == source_stability, parameters].copy()
+        df = df[(df[ProcessingFeatures.CLUSTER] == cluster)].copy()
+    df = df.loc[df[ProcessingFeatures.SOURCE_STABILITY] == source_stability].copy()
 
-    dates = matplotlib.dates.date2num(df.index.values)
+    dates_nobreakdown = matplotlib.dates.date2num(df[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0].index.values)
+    dates_breakdown = matplotlib.dates.date2num(df[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0].index.values)
 
-    fig, ax = plt.subplots(len(parameters), 1, sharex=True)
-    for i, parameter in enumerate(parameters):
+    fig, ax = plt.subplots(len(features), 1, sharex=True)
+    for i, parameter in enumerate(features):
         ax[i].set_title("{}".format(parameter))
         ax[i].tick_params(axis='both', which='major')
-        ax[i].plot_date(dates, df[parameter].values, linestyle='', marker='.', markersize=1)
+        if show_breakdows:
+            ax[i].plot_date(dates_breakdown, df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
+        ax[i].plot_date(dates_nobreakdown, df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
         ax[i].grid(True)
 
     figManager = plt.get_current_fig_manager()
@@ -60,11 +76,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description='View time development of clusters')
     parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
     parser.add_argument('-c', '--cluster', default=None, type=int, help='The cluster you want to look at, or None for all data')
+    parser.add_argument('-b', '--show_breakdows', default=False, type=bool, help='True or False (default) if you want to display the breakdown points (in a different color)')
 
     args = parser.parse_args()
 
     return {'source_stability' : args.source_stability, 
-            'cluster' : args.cluster}
+            'cluster' : args.cluster,
+            'show_breakdows' : args.show_breakdows}
 
 ### This is used to supress output to the console
 class DummyFile(object):

@@ -7,7 +7,7 @@ def classify_using_var_threshold(values, threshold):
     var = np.var(values)
     return int(var >= threshold)
 
-def detect_breakdowns(df, column='IP.NSRCGEN:SOURCEHTAQNI', window_size=40, threshold=0.5):
+def detect_breakdowns(df, ht_current_column, window_size=40, threshold=0.5):
     """ Detection of high voltage breakdown based on standard deviation exceding a certain threshold that has to be determined by experiments.
     
     Parameters:
@@ -20,13 +20,11 @@ def detect_breakdowns(df, column='IP.NSRCGEN:SOURCEHTAQNI', window_size=40, thre
         np.array: array that has ones, wherever a breakdown is found and is zero otherwise
     """
 
-    if not column in df:
+    if not ht_current_column in df:
         raise ValueError("Error: The column cannot be found in the dataframe.")
 
-    min_index = df.iloc[0].name
-
     result = np.zeros(len(df.index))
-    values = df[column].values
+    values = df[ht_current_column].values
     times = (df.index.astype('int64') * 1E-9).values
     
     current_breakdown = 0

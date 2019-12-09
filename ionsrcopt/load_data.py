@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 
+from source_features import SourceFeatures
+from processing_features import ProcessingFeatures
+
 def read_data_from_csv(filenames, cols_to_read, rows_to_read):
     """ Read a csv file into a DataFrame
 
@@ -30,13 +33,13 @@ def read_data_from_csv(filenames, cols_to_read, rows_to_read):
             print("File {} does not exist or is not a csv file". format(filename))
             exit()
 
-        if not ('Timestamp' in df.columns or 'Timestamp (UTC_TIME)' in df.columns):
-            print("No timestamp column was found. It must be named either \'Timestamp\' or \'Timestamp (UTC_TIME)\'.")
+        if not (SourceFeatures.Timestamp in df.columns or 'Timestamp (UTC_TIME)' in df.columns):
+            print("No timestamp column was found. It must be named either {} or \'Timestamp (UTC_TIME)\'.".format(SourceFeatures.Timestamp))
             exit()
 
-        df = df.rename(columns={'Timestamp (UTC_TIME)' : 'Timestamp'})
-        df['Timestamp'] = pd.to_datetime(df['Timestamp']) 
-        df = df.set_index('Timestamp')
+        df = df.rename(columns={'Timestamp (UTC_TIME)' : SourceFeatures.Timestamp})
+        df[SourceFeatures.Timestamp] = pd.to_datetime(df[SourceFeatures.Timestamp]) 
+        df = df.set_index(SourceFeatures.Timestamp)
         
         if not rows_to_read is None:
             df = df.iloc[rows_to_read].copy()
@@ -76,54 +79,19 @@ def convert_column_types(df):
     """
 
     print("Started type conversion of columns...")
-    df = convert_column(df, 'IP.NSRCGEN:BIASDISCAQNV', 'float32')
-    df = convert_column(df, 'IP.NSRCGEN:GASSASAQN', 'float32')
-    df = convert_column(df, 'IP.NSRCGEN:SOURCEHTAQNI', 'float32')
-    df = convert_column(df, 'IP.SAIREM2:FORWARDPOWER', 'float32')
-    df = convert_column(df, 'IP.NSRCGEN:OVEN1AQNP', 'float32')
-    df = convert_column(df, 'IP.SOLCEN.ACQUISITION:CURRENT', 'float32')
-    df = convert_column(df, 'IP.SOLEXT.ACQUISITION:CURRENT', 'float32')
-    df = convert_column(df, 'IP.SOLINJ.ACQUISITION:CURRENT', 'float32')
-    df = convert_column(df, 'ITF.BCT15:CURRENT', 'float32')
-    df = convert_column(df, 'ITF.BCT25:CURRENT', 'float32')
-    df = convert_column(df, 'ITH.BCT41:CURRENT', 'float32')
-    df = convert_column(df, 'ITL.BCT05:CURRENT', 'float32')
-    df = convert_column(df, 'source_stable', 'int32')
-    df = convert_column(df, 'is_breakdown', 'int32')
-    df = convert_column(df, 'duration_seconds', 'float32')
-    df = convert_column(df, 'optigrid_cluster', 'int32')
-    return df
-
-def clean_data(df):
-    """ Clean the data of measurements, that are outliers, e.g. spikes in the extraction current.
-
-    Parameters:
-        df (DataFrame): DataFrame containing the measurements.
-
-    Returns:
-        DataFrame: Cleaned data.
-    """
-
-    print("Filtering data...")
-    if 'ITF.BCT15:CURRENT' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['ITF.BCT15:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
-    if 'ITF.BCT25:CURRENT' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['ITF.BCT25:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
-    if 'ITH.BCT41:CURRENT' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['ITF.BCT41:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
-    if 'ITL.BCT05:CURRENT' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['ITF.BCT05:CURRENT'].apply(lambda x: np.nan if x < 0 else x)
-    if 'IP.NSRCGEN:OVEN1AQNP' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:OVEN1AQNP'].apply(lambda x: np.nan if x < 4.5 else x)
-    if 'IP.SOLEXT.ACQUISITION:CURRENT' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['IP.SOLEXT.ACQUISITION:CURRENT'].apply(lambda x: np.nan if x < 1200 else x)
-    if 'IP.NSRCGEN:BIASDISCAQNV' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:BIASDISCAQNV'].apply(lambda x: np.nan if x == 0 else x)
-    if 'IP.SAIREM2:FORWARDPOWER' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['IP.SAIREM2:FORWARDPOWER'].apply(lambda x: np.nan if x < 500 else x)
-    if 'IP.NSRCGEN:SOURCEHTAQNI' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:SOURCEHTAQNI'].apply(lambda x: np.nan if x > 2.5 else x)
-    if 'IP.NSRCGEN:SOURCEHTAQNI' in df.columns:
-        df['ITF.BCT25:CURRENT'] = df['IP.NSRCGEN:SOURCEHTAQNI'].apply(lambda x: np.nan if x < 0.5 else x)
-    
+    df = convert_column(df, SourceFeatures.BIASDISCAQNV, 'float32')
+    df = convert_column(df, SourceFeatures.GASSASAQN, 'float32')
+    df = convert_column(df, SourceFeatures.GASAQN, 'float32')
+    df = convert_column(df, SourceFeatures.SOLINJ_CURRENT, 'float32')
+    df = convert_column(df, SourceFeatures.SOLCEN_CURRENT, 'float32')
+    df = convert_column(df, SourceFeatures.SOLEXT_CURRENT, 'float32')
+    df = convert_column(df, SourceFeatures.OVEN1AQNP, 'float32')
+    df = convert_column(df, SourceFeatures.OVEN2AQNP, 'float32')
+    df = convert_column(df, SourceFeatures.SAIREM2_FORWARDPOWER, 'float32')
+    df = convert_column(df, SourceFeatures.SOURCEHTAQNI, 'float32')
+    df = convert_column(df, SourceFeatures.BCT25_CURRENT, 'float32')
+    df = convert_column(df, ProcessingFeatures.SOURCE_STABILITY, 'int32')
+    df = convert_column(df, ProcessingFeatures.HT_VOLTAGE_BREAKDOWN, 'int32')
+    df = convert_column(df, ProcessingFeatures.DATAPOINT_DURATION, 'float32')
+    df = convert_column(df, ProcessingFeatures.CLUSTER, 'int32')
     return df

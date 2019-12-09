@@ -5,23 +5,35 @@ import numpy as np
 import contextlib
 import io
 import sys
+import os
 
 from statsmodels.stats.weightstats import DescrStatsW
 
 import argparse
 
-sys.path.insert(1, '../ionsrcopt')
-from ionsrcopt import load_data as ld
+sys.path.insert(1, os.path.abspath('../ionsrcopt'))
+import load_data as ld
+from source_features import SourceFeatures
+from processing_features import ProcessingFeatures
 
 def main():
     ######################
     ###### SETTINGS ######
     ######################
 
-    clustered_data_folder = 'Data_Clustered/' # Base folder of clustered data
+    clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
     filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    features = ['IP.NSRCGEN:BIASDISCAQNV', 'IP.NSRCGEN:GASSASAQN', 'IP.SOLCEN.ACQUISITION:CURRENT', 'IP.SOLEXT.ACQUISITION:CURRENT', 'IP.NSRCGEN:OVEN1AQNP', 'ITF.BCT25:CURRENT'] # Features to be displayed
+    features = [
+        SourceFeatures.BIASDISCAQNV, 
+        SourceFeatures.GASAQN, 
+        SourceFeatures.OVEN1AQNP,
+        SourceFeatures.SAIREM2_FORWARDPOWER,
+        SourceFeatures.SOLINJ_CURRENT,
+        SourceFeatures.SOLCEN_CURRENT,
+        SourceFeatures.SOLEXT_CURRENT,
+        SourceFeatures.SOURCEHTAQNI,
+        SourceFeatures.BCT25_CURRENT] # Features to be displayed
     statistics = ['50%', 'std', 'avg_dev'] # Statistics we are interested in
  
     args = parse_args()
@@ -41,11 +53,11 @@ def main():
     df.dropna()
 
     # Select only the stability interested in
-    df = df[df['source_stable'] == source_stability].copy() 
-    total_duration = df['duration_seconds'].sum() / 3600
+    df = df[df[ProcessingFeatures.SOURCE_STABILITY] == source_stability].copy() 
+    total_duration = df[ProcessingFeatures.DATAPOINT_DURATION].sum() / 3600
     
     # Describe the clusters
-    described = df.groupby('optigrid_cluster').apply(describe_cluster, features=features, weight_column='duration_seconds')
+    described = df.groupby(ProcessingFeatures.CLUSTER).apply(describe_cluster, features=features, weight_column=ProcessingFeatures.DATAPOINT_DURATION)
     described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
     described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace = True)
 
@@ -62,8 +74,8 @@ def describe_cluster(cluster_df, features, weight_column):
     values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
     index = pd.MultiIndex.from_tuples([(p, v) for p in features for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
     
-    data = cluster_df.loc[(cluster_df['duration_seconds'] < 60) & (cluster_df['is_breakdown'] == 0), features].values # TODO maybe only include non breakdown here???
-    weights = cluster_df.loc[(cluster_df['duration_seconds'] < 60) & (cluster_df['is_breakdown'] == 0), weight_column].values
+    data = cluster_df.loc[(cluster_df[ProcessingFeatures.DATAPOINT_DURATION] < 60) & (cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), features].values # TODO maybe only include non breakdown here???
+    weights = cluster_df.loc[(cluster_df[ProcessingFeatures.DATAPOINT_DURATION] < 60) & (cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), weight_column].values
 
     stats = DescrStatsW(data, weights, ddof=1)
 
@@ -74,14 +86,14 @@ def describe_cluster(cluster_df, features, weight_column):
 
     count = len(data)
 
-    duration_in_seconds = cluster_df['duration_seconds'].sum()
+    duration_in_seconds = cluster_df[ProcessingFeatures.DATAPOINT_DURATION].sum()
     duration_in_hours = duration_in_seconds / 3600
 
     description = [[mean[i], std[i], avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(features))]
     description = [item for sublist in description for item in sublist]
     description.append(count)
     description.append(duration_in_hours)
-    description.append(cluster_df.loc[cluster_df['is_breakdown'] > 0, 'is_breakdown'].nunique() / duration_in_hours)
+    description.append(cluster_df.loc[cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, ProcessingFeatures.HT_VOLTAGE_BREAKDOWN].nunique() / duration_in_hours)
     
     return pd.Series(description, index=index)
 
@@ -92,8 +104,8 @@ def get_cluster_duration(cluster_df):
     
     duration = 0
     for start, end in zip(continuous_interval_beginning_points, continuous_interval_end_points):
-        time_start = cluster_df.loc[start, 'Timestamp']
-        time_end = cluster_df.loc[end, 'Timestamp']
+        time_start = cluster_df.loc[start, SourceFeatures.Timestamp]
+        time_end = cluster_df.loc[end, SourceFeatures.Timestamp]
         delta = time_end - time_start
         duration += delta.total_seconds()
 

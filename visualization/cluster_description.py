@@ -2,8 +2,6 @@ import pandas as pd
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.expand_frame_repr', False)
 import numpy as np
-import contextlib
-import io
 import sys
 import os
 
@@ -21,8 +19,11 @@ def main():
     ###### SETTINGS ######
     ######################
 
-    clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
-    filename = 'JanNov2018_lowbandwidth.csv' # The file to load
+    #clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
+    #filename = 'JanNov2018_lowbandwidth.csv' # The file to load
+
+    input_file = '../Data_Clustered/JanNov2018.csv'
+    output_file = './Results/JanNov2018_cluster.json'
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
@@ -34,23 +35,22 @@ def main():
         SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
         SourceFeatures.BCT25_CURRENT] # Features to be displayed
-    statistics = ['50%', 'std', 'avg_dev'] # Statistics we are interested in
+    statistics = ['50%'] # Statistics we are interested in
  
     args = parse_args()
     source_stability = args['source_stability']
     count_breakdowns_per_cluster = args['count_breakdowns_per_cluster']
     num_clusters_to_visualize = args['num_clusters_to_visualize']
+    print_to_file = False#args['print_to_file']
 
     ######################
     ######## CODE ########
     ######################
 
     # Load file into a data frame
-    path = clustered_data_folder + filename
-    df = ld.read_data_from_csv(path, None, None)
-    with nostdout():
-        df = ld.convert_column_types(df)
-    df.dropna()
+    df = ld.read_data_from_csv(input_file, None, None)
+    df = ld.fill_columns(df, None, fill_nan_with_zeros=True)
+    df = ld.convert_column_types(df)
 
     # Select only the stability interested in
     df = df[df[ProcessingFeatures.SOURCE_STABILITY] == source_stability].copy() 
@@ -68,7 +68,11 @@ def main():
 
     printable_clusters = described[wanted_statistics].head(n=num_clusters_to_visualize)
     print("Sum of densities of printed clusters: {:.1f}%".format(printable_clusters[('DENSITY', 'percentage')].sum()))
-    print(printable_clusters.round(3))
+    if print_to_file:
+        printable_clusters.round(3).to_csv(output_file)
+        print("Saved result to {}".format(output_file))
+    else:
+        print(printable_clusters.round(3))
 
 def describe_cluster(cluster_df, features, weight_column):
     values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
@@ -104,8 +108,8 @@ def get_cluster_duration(cluster_df):
     
     duration = 0
     for start, end in zip(continuous_interval_beginning_points, continuous_interval_end_points):
-        time_start = cluster_df.loc[start, SourceFeatures.Timestamp]
-        time_end = cluster_df.loc[end, SourceFeatures.Timestamp]
+        time_start = cluster_df.loc[start, SourceFeatures.TIMESTAMP]
+        time_end = cluster_df.loc[end, SourceFeatures.TIMESTAMP]
         delta = time_end - time_start
         duration += delta.total_seconds()
 
@@ -133,23 +137,14 @@ def parse_args():
     parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
     parser.add_argument('-b', '--count_breakdowns_per_cluster', default=True, type=bool, help='Count how many breakdowns occur per cluster, True or False')
     parser.add_argument('-v', '--num_clusters_to_visualize', default=20, type=int, help='How many clusters shall be displayed')
+    parser.add_argument('-f', '--print_to_file', default=True, type=bool, help='Print the results to a file?')
 
     args = parser.parse_args()
 
     return {'source_stability' : args.source_stability, 
             'count_breakdowns_per_cluster' : args.count_breakdowns_per_cluster,
-            'num_clusters_to_visualize' : args.num_clusters_to_visualize}
-
-### This is used to supress output to the console
-class DummyFile(object):
-    def write(self, x): pass
-
-@contextlib.contextmanager
-def nostdout():
-    save_stdout = sys.stdout
-    sys.stdout = DummyFile()
-    yield
-    sys.stdout = save_stdout
+            'num_clusters_to_visualize' : args.num_clusters_to_visualize,
+            'print_to_file' : args.print_to_file}
 
 if __name__ == "__main__":
     main()

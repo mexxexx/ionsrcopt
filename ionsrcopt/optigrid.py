@@ -70,7 +70,7 @@ class Optigrid:
         if not cuts_iteration:
             last_cluster_name[0] += 1
             if self.verbose:
-                print("Found cluster {}".format(last_cluster_name[0]))
+                print("Found cluster {}: {:.2f}% of datapoints".format(last_cluster_name[0], percentage_of_values*100))
 
             return GridLevel(cutting_planes=None, cluster_index=last_cluster_name[0]), [cluster_indices]
     
@@ -90,13 +90,11 @@ class Optigrid:
             sum_weights = np.sum(weights[cluster])
 
             if self.verbose:
-                print("Evaluating subgrid: {:.2f}% of datapoints".format(percentage_of_values*100))
+                print("Evaluating subgrid: {:.2f}% of datapoints".format(percentage_of_values*sum_weights/sum_weights_total*100))
             subgrid, subresult = self._iteration(data=data, weights=weights, cluster_indices=cluster, percentage_of_values=percentage_of_values*sum_weights/sum_weights_total, last_cluster_name=last_cluster_name) # Run Optigrid on every subgrid
             grid.add_subgrid(i, subgrid)
             result += subresult
 
-        if self.verbose:
-            print("Found cluster: {:.2f}% of datapoints".format(percentage_of_values*100))
         return grid, result
 
     def _fill_grid(self, data, cluster_indices, cuts):

@@ -11,7 +11,7 @@
 !/ionsrcopt
 # Everything in the tests directory
 !/tests
-# Allow everythin in the vsiaulization directory
+# Allow everythin in the visualization directory
 !/visualization
 
 # Allow the Preparation Folder, but only specified files

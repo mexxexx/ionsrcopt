@@ -3,8 +3,6 @@ pd.plotting.register_matplotlib_converters()
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import contextlib
-import io
 import sys
 import os
 
@@ -21,7 +19,7 @@ def main():
     ######################
 
     clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
-    filename = 'JanNov2018_lowbandwidth.csv' # The file to load
+    filename = 'JanNov2018.csv' # The file to load
     
     features = [
         SourceFeatures.BIASDISCAQNV, 
@@ -46,9 +44,8 @@ def main():
     # Load file into a data frame
     path = clustered_data_folder + filename
     df = ld.read_data_from_csv(path, None, None)
-    with nostdout():
-        df = ld.convert_column_types(df)
-    df.dropna()    
+    df = ld.fill_columns(df, None, fill_nan_with_zeros=True)
+    df = ld.convert_column_types(df)
 
     if cluster is not None:
         df = df[(df[ProcessingFeatures.CLUSTER] == cluster)].copy()
@@ -83,17 +80,6 @@ def parse_args():
     return {'source_stability' : args.source_stability, 
             'cluster' : args.cluster,
             'show_breakdows' : args.show_breakdows}
-
-### This is used to supress output to the console
-class DummyFile(object):
-    def write(self, x): pass
-
-@contextlib.contextmanager
-def nostdout():
-    save_stdout = sys.stdout
-    sys.stdout = DummyFile()
-    yield
-    sys.stdout = save_stdout
 
 if __name__ == "__main__":
     main()

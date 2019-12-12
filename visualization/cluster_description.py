@@ -35,7 +35,7 @@ def main():
         SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
         SourceFeatures.BCT25_CURRENT] # Features to be displayed
-    statistics = ['50%', 'std'] # Statistics we are interested in
+    statistics = ['50%'] # Statistics we are interested in
  
     args = parse_args()
     source_stability = args['source_stability']

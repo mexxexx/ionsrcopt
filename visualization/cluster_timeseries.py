@@ -2,6 +2,7 @@ import pandas as pd
 pd.plotting.register_matplotlib_converters()
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.ticker import Formatter
 import numpy as np
 import sys
 import os
@@ -51,16 +52,18 @@ def main():
         df = df[(df[ProcessingFeatures.CLUSTER] == cluster)].copy()
     df = df.loc[df[ProcessingFeatures.SOURCE_STABILITY] == source_stability].copy()
 
-    dates_nobreakdown = matplotlib.dates.date2num(df[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0].index.values)
-    dates_breakdown = matplotlib.dates.date2num(df[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0].index.values)
+    dates = df.index.values
+    datesIndices = np.arange(len(dates))
 
     fig, ax = plt.subplots(len(features), 1, sharex=True)
     for i, parameter in enumerate(features):
+        formatter = DateFormatter(dates)
+        ax[i].xaxis.set_major_formatter(formatter)
         ax[i].set_title("{}".format(parameter))
         ax[i].tick_params(axis='both', which='major')
         if show_breakdows:
-            ax[i].plot_date(dates_breakdown, df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
-        ax[i].plot_date(dates_nobreakdown, df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
+            ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
+        ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
         ax[i].grid(True)
 
     figManager = plt.get_current_fig_manager()
@@ -68,6 +71,19 @@ def main():
     fig.suptitle('Time development of cluster {}'.format(cluster))
     plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.93, wspace=None, hspace=0.4)
     plt.show()
+
+class DateFormatter(Formatter):
+    def __init__(self, dates, fmt='%Y-%m-%d %H:%M'):
+        self.dates = dates
+        self.fmt = fmt
+
+    def __call__(self, x, pos=0):
+        'Return the label for time x at position pos'
+        ind = int(np.round(x))
+        if ind >= len(self.dates) or ind < 0:
+            return ''
+
+        return pd.to_datetime(str(self.dates[ind])).strftime(self.fmt)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='View time development of clusters')

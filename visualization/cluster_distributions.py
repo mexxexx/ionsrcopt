@@ -18,11 +18,11 @@ def main():
     ###### SETTINGS ######
     ######################
 
-    clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
+    clustered_data_folder = 'Data_Clustered/' # Base folder of clustered data 
     filename = 'JanNov2018.csv' # The file to load
 
     source_stability = 1 # 1 if we want to look at a stable source, 0 else
-    cluster = 23 # The cluster to plot or None if you want to plot all data
+    cluster = 51 # The cluster to plot or None if you want to plot all data
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
@@ -36,8 +36,8 @@ def main():
         SourceFeatures.BCT25_CURRENT] # Features to be displayed
 
     normalize = True # Do we want to standard scale the data? 
-    bandwidth = np.array([1, 0.001, 0.5, 5, 0.1, 0.0001]) *5 # bandwidth for unnormalized data
-    bandwidth = 0.06
+    bandwidth = np.array([0.014, 0.011, 0.014, 0.014, 0.014, 0.014, 0.014, 0.014, 0.014]) # bandwidth for unnormalized data
+    #bandwidth = 0.02
 
     ######################
     ######## CODE ########
@@ -53,18 +53,21 @@ def main():
     total_duration = df[ProcessingFeatures.DATAPOINT_DURATION].sum()
 
     data = df[features].values
+    weights = df[ProcessingFeatures.DATAPOINT_DURATION].values
     if normalize:
         #data = (data - np.mean(data, axis=0)) / np.std(data, axis=0) #Standard scaling
-        data = (data - np.min(data, axis=0)) / (np.max(data, axis=0) - np.min(data, axis=0)) #MinMax scaling
+        #data = (data - np.min(data, axis=0)) / (np.max(data, axis=0) - np.min(data, axis=0)) #MinMax scaling
+        #data = data / np.max(np.absolute(data), axis=0) #Max scaling
+        data = (data - np.median(data, axis=0)) / (np.quantile(data, q=0.9, axis=0) - np.quantile(data, q=0.1, axis=0)) #Robust scaler
 
     if cluster is not None:
         data = data[df[ProcessingFeatures.CLUSTER]==cluster]
+        weights = weights[df[ProcessingFeatures.CLUSTER]==cluster]
 
-    resolution = 10000
+    resolution = 5000
     #if cluster is not None:
     #    bandwidth *= 0.2
     num_kde_samples = 40000
-    weights = df[ProcessingFeatures.DATAPOINT_DURATION].values
     cluster_duration = np.sum(weights)
     percentage_of_values = cluster_duration/total_duration
 
@@ -74,9 +77,9 @@ def plot_cluster(data, weights, features, feature_ranges, median, resolution, ba
     if isinstance(bandwidth, float):
         bandwidth = [bandwidth for i in range(len(features))]
     
-    fig, ax = plt.subplots(len(features), 1, sharex=True)
+    fig, ax = plt.subplots(len(features), 1, sharex=False)
     for i, feature in enumerate(features):
-        grid, kde = estimate_distribution(data, weights, i, resolution, bandwidth=bandwidth[i], num_kde_samples=num_kde_samples)
+        grid, kde = estimate_distribution(data, weights, i, resolution, bandwidth=bandwidth[i], num_kde_samples=num_kde_samples, percentage_of_values=percentage_of_values)
         ax[i].set_title("{}".format(feature))
         ax[i].tick_params(axis='both', which='major')
         if feature_ranges:
@@ -108,7 +111,7 @@ def estimate_distribution(data, weights, current_dimension, num_steps, bandwidth
     max_val = np.amax(datapoints)
     grid = np.linspace(min_val, max_val, num_steps)
 
-    kde = gaussian_kde(dataset=datapoints, bw_method='scott', weights=weights_sample)
+    kde = gaussian_kde(dataset=datapoints, bw_method=bandwidth / np.std(datapoints, axis=0), weights=weights_sample)
     dens = kde.evaluate(grid)
     return grid, dens * percentage_of_values
 

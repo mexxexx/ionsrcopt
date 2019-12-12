@@ -23,6 +23,8 @@ class Optigrid:
         self.clusters = None
         self.num_clusters = -1
 
+        if not isinstance(kde_bandwidth, list):
+            kde_bandwidth = [kde_bandwidth] * d
         self.kde_bandwidth = kde_bandwidth
         self.kde_grid_ticks = kde_grid_ticks
         self.kde_num_samples = kde_num_samples
@@ -211,11 +213,11 @@ class Optigrid:
         max_val = np.amax(datapoints)
 
         std = datapoints.std(ddof=1)
-        if np.isclose(std, 0, atol=1e-6):
+        if np.isclose(std, 0, atol=1e-6) or np.isnan(std):
             return 0, np.infty
 
         try:
-            kde = gaussian_kde(dataset=datapoints, bw_method=self.kde_bandwidth / std, weights=weights_sample)
+            kde = gaussian_kde(dataset=datapoints, bw_method=self.kde_bandwidth[current_dimension] / std, weights=weights_sample)
         except:
             print('Something went wrong when calculating kde.') 
             print('Std: {}'.format(std))

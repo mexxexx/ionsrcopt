@@ -22,8 +22,8 @@ def main():
     #clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
     #filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    input_file = '../Data_Clustered/JanNov2018.csv'
-    output_file = './Results/JanNov2018_cluster.json'
+    input_file = '../Data_Clustered/JanNov2018_robust.csv'
+    output_file = './Results/JanNov2018_robust_cluster.csv'
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
@@ -35,13 +35,13 @@ def main():
         SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
         SourceFeatures.BCT25_CURRENT] # Features to be displayed
-    statistics = ['50%'] # Statistics we are interested in
+    statistics = ['50%', 'std'] # Statistics we are interested in
  
     args = parse_args()
     source_stability = args['source_stability']
     count_breakdowns_per_cluster = args['count_breakdowns_per_cluster']
     num_clusters_to_visualize = args['num_clusters_to_visualize']
-    print_to_file = False#args['print_to_file']
+    print_to_file = args['print_to_file']
 
     ######################
     ######## CODE ########
@@ -57,6 +57,7 @@ def main():
     total_duration = df[ProcessingFeatures.DATAPOINT_DURATION].sum() / 3600
     
     # Describe the clusters
+    print("Calculating statistics...")
     described = df.groupby(ProcessingFeatures.CLUSTER).apply(describe_cluster, features=features, weight_column=ProcessingFeatures.DATAPOINT_DURATION)
     described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
     described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace = True)
@@ -66,13 +67,44 @@ def main():
     if count_breakdowns_per_cluster:
         wanted_statistics += [('num_breakdowns', 'per_hour')]
 
+    print("Rounding values...")
     printable_clusters = described[wanted_statistics].head(n=num_clusters_to_visualize)
     print("Sum of densities of printed clusters: {:.1f}%".format(printable_clusters[('DENSITY', 'percentage')].sum()))
+    printable_clusters = round_described(printable_clusters, {
+        SourceFeatures.BIASDISCAQNV : 0, 
+        SourceFeatures.GASAQN : 2, 
+        SourceFeatures.OVEN1AQNP : 1,
+        SourceFeatures.SAIREM2_FORWARDPOWER : 0,
+        SourceFeatures.SOLINJ_CURRENT : 0,
+        SourceFeatures.SOLCEN_CURRENT : 0,
+        SourceFeatures.SOLEXT_CURRENT : 0,
+        SourceFeatures.SOURCEHTAQNI : 2,
+        SourceFeatures.BCT25_CURRENT : 3
+    })
     if print_to_file:
-        printable_clusters.round(3).to_csv(output_file)
+        printable_clusters.to_csv(output_file)
         print("Saved result to {}".format(output_file))
     else:
-        print(printable_clusters.round(3))
+        print(printable_clusters)
+
+def round_described(described, decimals):
+    for k, v in decimals.items():
+        described = described.round({
+            (k, 'mean') : v,
+            (k, 'std') : min(v+1, 3),
+            (k, 'avg_dev') : v,
+            (k, 'min') : v,
+            (k, '25%') : v,
+            (k, '50%') : v,
+            (k, '75%') : v,
+            (k, 'max') : v
+            })
+    
+    return described.round({
+        ('DENSITY', 'percentage') : 1,
+        ('DURATION', 'in_hours') : 1,
+        ('num_breakdowns', 'per_hour') : 2
+    })
 
 def describe_cluster(cluster_df, features, weight_column):
     values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
@@ -137,14 +169,14 @@ def parse_args():
     parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
     parser.add_argument('-b', '--count_breakdowns_per_cluster', default=True, type=bool, help='Count how many breakdowns occur per cluster, True or False')
     parser.add_argument('-v', '--num_clusters_to_visualize', default=20, type=int, help='How many clusters shall be displayed')
-    parser.add_argument('-f', '--print_to_file', default=True, type=bool, help='Print the results to a file?')
+    parser.add_argument('-f', '--print_to_file', default='y', type=str, help='Print the results to a file? (y/n)')
 
     args = parser.parse_args()
 
     return {'source_stability' : args.source_stability, 
             'count_breakdowns_per_cluster' : args.count_breakdowns_per_cluster,
             'num_clusters_to_visualize' : args.num_clusters_to_visualize,
-            'print_to_file' : args.print_to_file}
+            'print_to_file' : True if args.print_to_file=='y' else False}
 
 if __name__ == "__main__":
     main()

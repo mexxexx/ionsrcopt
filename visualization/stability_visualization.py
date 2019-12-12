@@ -17,7 +17,7 @@ def main():
     ######################
 
     clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
-    filename = 'JanNov2018.csv' # The file to load
+    filename = 'JanNov2018_robust.csv' # The file to load
 
     ######################
     ######## CODE ########

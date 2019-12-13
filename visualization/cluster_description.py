@@ -22,14 +22,14 @@ def main():
     #clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
     #filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    input_file = '../Data_Clustered/JanNov2016.csv'
-    output_file = './Results/JanNov2016_unstable.csv'
+    input_file = '../Data_Clustered/JanNov2018.csv'
+    output_file = './Results/JanNov2018.csv'
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
         SourceFeatures.GASAQN, 
         SourceFeatures.OVEN1AQNP,
-        SourceFeatures.THOMSON_FORWARDPOWER,
+        SourceFeatures.SAIREM2_FORWARDPOWER,
         SourceFeatures.SOLINJ_CURRENT,
         SourceFeatures.SOLCEN_CURRENT,
         SourceFeatures.SOLEXT_CURRENT,
@@ -51,6 +51,11 @@ def main():
     df = ld.read_data_from_csv(input_file, None, None)
     df = ld.fill_columns(df, None, fill_nan_with_zeros=True)
     df = ld.convert_column_types(df)
+
+    for feature in features:
+        if feature not in df.columns:
+            print("{} does not exist as a feature in the loaded file. Aborting.".format(feature))
+            return
 
     # Select only the stability interested in
     df = df[df[ProcessingFeatures.SOURCE_STABILITY] == source_stability].copy() 
@@ -86,8 +91,8 @@ def main():
         SourceFeatures.BIASDISCAQNV : 'bias disc', 
         SourceFeatures.GASAQN : 'gas', 
         SourceFeatures.OVEN1AQNP : 'oven1',
-        SourceFeatures.SAIREM2_FORWARDPOWER : 'sairem2', 
-        SourceFeatures.THOMSON_FORWARDPOWER : 'thomson',
+        SourceFeatures.SAIREM2_FORWARDPOWER : 'RF', 
+        SourceFeatures.THOMSON_FORWARDPOWER : 'RF',
         SourceFeatures.SOLINJ_CURRENT : 'solinj',
         SourceFeatures.SOLCEN_CURRENT : 'solcen',
         SourceFeatures.SOLEXT_CURRENT : 'solext',

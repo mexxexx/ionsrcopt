@@ -69,6 +69,7 @@ def convert_column_types(df):
         SourceFeatures.OVEN1AQNP : 'float32',
         SourceFeatures.OVEN2AQNP : 'float32',
         SourceFeatures.SAIREM2_FORWARDPOWER : 'float32',
+        SourceFeatures.THOMSON_FORWARDPOWER : 'float32',
         SourceFeatures.SOURCEHTAQNI : 'float32',
         SourceFeatures.BCT05_CURRENT : 'float32',
         SourceFeatures.BCT25_CURRENT : 'float32',

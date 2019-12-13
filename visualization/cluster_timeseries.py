@@ -20,7 +20,7 @@ def main():
     ######################
 
     clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
-    filename = 'JanNov2018_robust.csv' # The file to load
+    filename = 'JanNov2018.csv' # The file to load
     
     features = [
         SourceFeatures.BIASDISCAQNV, 
@@ -52,6 +52,9 @@ def main():
         df = df[(df[ProcessingFeatures.CLUSTER] == cluster)].copy()
     df = df.loc[df[ProcessingFeatures.SOURCE_STABILITY] == source_stability].copy()
 
+    dates_nobreakdown = matplotlib.dates.date2num(df[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0].index)
+    dates_breakdown = matplotlib.dates.date2num(df[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0].index)
+
     dates = df.index.values
     datesIndices = np.arange(len(dates))
 
@@ -62,8 +65,10 @@ def main():
         ax[i].set_title("{}".format(parameter))
         ax[i].tick_params(axis='both', which='major')
         if show_breakdows:
-            ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
-        ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
+            #ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
+            ax[i].plot_date(dates_breakdown, df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
+        #ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
+        ax[i].plot_date(dates_nobreakdown, df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
         ax[i].grid(True)
 
     figManager = plt.get_current_fig_manager()

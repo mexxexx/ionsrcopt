@@ -13,6 +13,7 @@
 !/tests
 # Allow everythin in the visualization directory
 !/visualization
+/visualization/Results/*
 
 # Allow the Preparation Folder, but only specified files
 !/Preparation

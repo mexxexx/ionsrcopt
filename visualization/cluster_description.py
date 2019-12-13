@@ -22,14 +22,14 @@ def main():
     #clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
     #filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    input_file = '../Data_Clustered/JanNov2018_robust.csv'
-    output_file = './Results/JanNov2018_robust_cluster.csv'
+    input_file = '../Data_Clustered/JanNov2016.csv'
+    output_file = './Results/JanNov2016_unstable.csv'
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
         SourceFeatures.GASAQN, 
         SourceFeatures.OVEN1AQNP,
-        SourceFeatures.SAIREM2_FORWARDPOWER,
+        SourceFeatures.THOMSON_FORWARDPOWER,
         SourceFeatures.SOLINJ_CURRENT,
         SourceFeatures.SOLCEN_CURRENT,
         SourceFeatures.SOLEXT_CURRENT,
@@ -60,7 +60,7 @@ def main():
     print("Calculating statistics...")
     described = df.groupby(ProcessingFeatures.CLUSTER).apply(describe_cluster, features=features, weight_column=ProcessingFeatures.DATAPOINT_DURATION)
     described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
-    described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace = True)
+    described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace=True)
 
     # Gather statistics to output
     wanted_statistics = get_wanted_statistics(features, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours')] 
@@ -74,6 +74,7 @@ def main():
         SourceFeatures.BIASDISCAQNV : 0, 
         SourceFeatures.GASAQN : 2, 
         SourceFeatures.OVEN1AQNP : 1,
+        SourceFeatures.THOMSON_FORWARDPOWER : 0,
         SourceFeatures.SAIREM2_FORWARDPOWER : 0,
         SourceFeatures.SOLINJ_CURRENT : 0,
         SourceFeatures.SOLCEN_CURRENT : 0,
@@ -81,6 +82,18 @@ def main():
         SourceFeatures.SOURCEHTAQNI : 2,
         SourceFeatures.BCT25_CURRENT : 3
     })
+    printable_clusters.rename({
+        SourceFeatures.BIASDISCAQNV : 'bias disc', 
+        SourceFeatures.GASAQN : 'gas', 
+        SourceFeatures.OVEN1AQNP : 'oven1',
+        SourceFeatures.SAIREM2_FORWARDPOWER : 'sairem2', 
+        SourceFeatures.THOMSON_FORWARDPOWER : 'thomson',
+        SourceFeatures.SOLINJ_CURRENT : 'solinj',
+        SourceFeatures.SOLCEN_CURRENT : 'solcen',
+        SourceFeatures.SOLEXT_CURRENT : 'solext',
+        SourceFeatures.SOURCEHTAQNI : 'HTI',
+        SourceFeatures.BCT25_CURRENT : 'BCT25'
+    }, axis='columns', inplace=True)
     if print_to_file:
         printable_clusters.to_csv(output_file)
         print("Saved result to {}".format(output_file))
@@ -110,8 +123,10 @@ def describe_cluster(cluster_df, features, weight_column):
     values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
     index = pd.MultiIndex.from_tuples([(p, v) for p in features for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
     
-    data = cluster_df.loc[(cluster_df[ProcessingFeatures.DATAPOINT_DURATION] < 60) & (cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), features].values # TODO maybe only include non breakdown here???
-    weights = cluster_df.loc[(cluster_df[ProcessingFeatures.DATAPOINT_DURATION] < 60) & (cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), weight_column].values
+    data = cluster_df.loc[(cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), features].values # TODO maybe only include non breakdown here???
+    weights = cluster_df.loc[(cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), weight_column].values
+    if data.size == 0:
+        return None
 
     stats = DescrStatsW(data, weights, ddof=1)
 
@@ -169,7 +184,7 @@ def parse_args():
     parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
     parser.add_argument('-b', '--count_breakdowns_per_cluster', default=True, type=bool, help='Count how many breakdowns occur per cluster, True or False')
     parser.add_argument('-v', '--num_clusters_to_visualize', default=20, type=int, help='How many clusters shall be displayed')
-    parser.add_argument('-f', '--print_to_file', default='y', type=str, help='Print the results to a file? (y/n)')
+    parser.add_argument('-f', '--print_to_file', default='n', type=str, help='Print the results to a file? (y/n)')
 
     args = parser.parse_args()
 

@@ -22,14 +22,14 @@ def main():
     #clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
     #filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    input_file = '../Data_Clustered/JanNov2018.csv'
-    output_file = './Results/JanNov2018.csv'
+    input_file = '../Data_Clustered/JanNov2016.csv'
+    output_file = './Results/JanNov2016.csv'
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
         SourceFeatures.GASAQN, 
         SourceFeatures.OVEN1AQNP,
-        SourceFeatures.SAIREM2_FORWARDPOWER,
+        SourceFeatures.THOMSON_FORWARDPOWER,
         SourceFeatures.SOLINJ_CURRENT,
         SourceFeatures.SOLCEN_CURRENT,
         SourceFeatures.SOLEXT_CURRENT,

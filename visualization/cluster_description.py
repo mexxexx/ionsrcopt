@@ -6,6 +6,7 @@ import sys
 import os
 
 from statsmodels.stats.weightstats import DescrStatsW
+from sklearn import preprocessing
 
 import argparse
 
@@ -13,6 +14,7 @@ sys.path.insert(1, os.path.abspath('../ionsrcopt'))
 import load_data as ld
 from source_features import SourceFeatures
 from processing_features import ProcessingFeatures
+import cluster_metrics
 
 def main():
     ######################
@@ -35,13 +37,14 @@ def main():
         SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
         SourceFeatures.BCT25_CURRENT] # Features to be displayed
-    statistics = ['50%'] # Statistics we are interested in
+    statistics = ['50%', 'std'] # Statistics we are interested in
  
     args = parse_args()
     source_stability = args['source_stability']
     count_breakdowns_per_cluster = args['count_breakdowns_per_cluster']
     num_clusters_to_visualize = args['num_clusters_to_visualize']
     print_to_file = args['print_to_file']
+    display_metrics = args['display_metrics']
 
     ######################
     ######## CODE ########
@@ -65,12 +68,23 @@ def main():
     print("Calculating statistics...")
     described = df.groupby(ProcessingFeatures.CLUSTER).apply(describe_cluster, features=features, weight_column=ProcessingFeatures.DATAPOINT_DURATION)
     described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
-    described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace=True)
 
     # Gather statistics to output
     wanted_statistics = get_wanted_statistics(features, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours')] 
     if count_breakdowns_per_cluster:
         wanted_statistics += [('num_breakdowns', 'per_hour')]
+
+    # Calculate metrics
+    if display_metrics:
+        metrics = calculate_metrics(df, features)
+        print('DBI is {}'.format(np.mean(metrics['DBI'])))
+        described.loc[described.index >= 0, ('METRICS', 'DBI')] = metrics['DBI']
+        print('Silhouette is {}'.format(np.mean(metrics['silhouette'])))
+        described.loc[described.index >= 0, ('METRICS', 'silhouette')] = metrics['silhouette']
+
+        wanted_statistics += [('METRICS', 'DBI'), ('METRICS', 'silhouette')]
+
+    described.sort_values(by=[('DENSITY', 'percentage')], ascending=False, inplace=True)
 
     print("Rounding values...")
     printable_clusters = described[wanted_statistics].head(n=num_clusters_to_visualize)
@@ -99,6 +113,8 @@ def main():
         SourceFeatures.SOURCEHTAQNI : 'HTI',
         SourceFeatures.BCT25_CURRENT : 'BCT25'
     }, axis='columns', inplace=True)
+
+
     if print_to_file:
         printable_clusters.to_csv(output_file)
         print("Saved result to {}".format(output_file))
@@ -184,19 +200,32 @@ def get_wanted_statistics(features, statistics):
     result = [item for sublist in result for item in sublist]
     return result
 
+def calculate_metrics(df, features):
+    X = df.loc[(df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0) & (df[ProcessingFeatures.CLUSTER] >= 0), features].values
+    scaler = preprocessing.RobustScaler((10,90)).fit(X)
+    X = scaler.transform(X)
+    labels = df.loc[(df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0) & (df[ProcessingFeatures.CLUSTER] >= 0), ProcessingFeatures.CLUSTER].values
+
+    dbi = cluster_metrics.DBI(X, labels)
+    silhouette = cluster_metrics.silhouette(X, labels, 70000)
+
+    return { 'DBI' : dbi, 'silhouette' : silhouette }
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Describe clusters')
     parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
-    parser.add_argument('-b', '--count_breakdowns_per_cluster', default=True, type=bool, help='Count how many breakdowns occur per cluster, True or False')
+    parser.add_argument('-b', '--count_breakdowns_per_cluster', default='n', type=bool, help='Count how many breakdowns occur per cluster? [y/n]')
     parser.add_argument('-v', '--num_clusters_to_visualize', default=20, type=int, help='How many clusters shall be displayed')
     parser.add_argument('-f', '--print_to_file', default='n', type=str, help='Print the results to a file? (y/n)')
+    parser.add_argument('-m', '--display_metrics', default='n', type=str, help='Print clustering metrics? (y/n)')
 
     args = parser.parse_args()
 
     return {'source_stability' : args.source_stability, 
-            'count_breakdowns_per_cluster' : args.count_breakdowns_per_cluster,
+            'count_breakdowns_per_cluster' : True if args.count_breakdowns_per_cluster=='y' else False,
             'num_clusters_to_visualize' : args.num_clusters_to_visualize,
-            'print_to_file' : True if args.print_to_file=='y' else False}
+            'print_to_file' : True if args.print_to_file=='y' else False,
+            'display_metrics' : True if args.display_metrics=='y' else False}
 
 if __name__ == "__main__":
     main()

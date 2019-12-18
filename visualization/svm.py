@@ -19,7 +19,7 @@ def main():
 
     X = df[features].values
     y = df['label'].values
-    weights = df[('DURATION', 'in_hours')]
+    #weights = df[('DURATION', 'in_hours')]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15)
 
     svc = SVC(C=10.0, kernel='linear', gamma='auto', probability=True)

@@ -20,13 +20,13 @@ def main():
     ######################
 
     clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
-    filename = 'JanNov2018.csv' # The file to load
+    filename = 'JanNov2016.csv' # The file to load
     
     features = [
         SourceFeatures.BIASDISCAQNV, 
         SourceFeatures.GASAQN, 
         SourceFeatures.OVEN1AQNP,
-        SourceFeatures.SAIREM2_FORWARDPOWER,
+        SourceFeatures.THOMSON_FORWARDPOWER,
         SourceFeatures.SOLINJ_CURRENT,
         SourceFeatures.SOLCEN_CURRENT,
         SourceFeatures.SOLEXT_CURRENT,
@@ -61,7 +61,7 @@ def main():
     fig, ax = plt.subplots(len(features), 1, sharex=True)
     for i, parameter in enumerate(features):
         formatter = DateFormatter(dates)
-        ax[i].xaxis.set_major_formatter(formatter)
+        #ax[i].xaxis.set_major_formatter(formatter)
         ax[i].set_title("{}".format(parameter))
         ax[i].tick_params(axis='both', which='major')
         if show_breakdows:

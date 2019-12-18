@@ -9,10 +9,7 @@ def DBI(X, labels):
     cluster_centers = np.array([X[labels == c].mean(axis=0) for c in range(num_clusters)])
     S = np.array([np.mean(np.linalg.norm(X[labels == c] - cluster_centers[c], axis=1)) for c in range(num_clusters)])
 
-    #M = np.zeros((num_clusters, num_clusters))
-    #for i in range(num_clusters):
-        #M[:, i] = np.linalg.norm(cluster_centers-cluster_centers[i], axis=1)
-    M = np.linalg.norm(cluster_centers[:,None]-cluster_centers, axis=1)
+    M = np.linalg.norm(cluster_centers[:,None]-cluster_centers, axis=2)
 
     M = np.where(M == 0, np.inf, M)
     R = S[:,None] + S

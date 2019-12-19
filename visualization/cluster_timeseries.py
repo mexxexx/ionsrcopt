@@ -56,11 +56,11 @@ def main():
     dates_breakdown = matplotlib.dates.date2num(df[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0].index)
 
     dates = df.index.values
-    datesIndices = np.arange(len(dates))
+    #datesIndices = np.arange(len(dates))
 
     fig, ax = plt.subplots(len(features), 1, sharex=True)
     for i, parameter in enumerate(features):
-        formatter = DateFormatter(dates)
+        #formatter = DateFormatter(dates)
         #ax[i].xaxis.set_major_formatter(formatter)
         ax[i].set_title("{}".format(parameter))
         ax[i].tick_params(axis='both', which='major')

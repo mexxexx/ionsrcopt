@@ -24,20 +24,23 @@ def main():
     #clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
     #filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    input_file = '../Data_Clustered/JanNov2016.csv'
-    output_file = './Results/JanNov2016.csv'
+    input_file = '../Data_Clustered/MayDec2015.csv'
+    output_file = './Results/2015.csv'
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
         SourceFeatures.GASAQN, 
         SourceFeatures.OVEN1AQNP,
+        SourceFeatures.OVEN2AQNP,
         SourceFeatures.THOMSON_FORWARDPOWER,
+        #SourceFeatures.SAIREM2_FORWARDPOWER,
         SourceFeatures.SOLINJ_CURRENT,
         SourceFeatures.SOLCEN_CURRENT,
         SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
-        SourceFeatures.BCT25_CURRENT] # Features to be displayed
-    statistics = ['50%', 'std'] # Statistics we are interested in
+        SourceFeatures.BCT25_CURRENT
+        ] # Features to be displayed
+    statistics = ['median'] # Statistics we are interested in
  
     args = parse_args()
     source_stability = args['source_stability']
@@ -93,6 +96,7 @@ def main():
         SourceFeatures.BIASDISCAQNV : 0, 
         SourceFeatures.GASAQN : 2, 
         SourceFeatures.OVEN1AQNP : 1,
+        SourceFeatures.OVEN2AQNP : 1,
         SourceFeatures.THOMSON_FORWARDPOWER : 0,
         SourceFeatures.SAIREM2_FORWARDPOWER : 0,
         SourceFeatures.SOLINJ_CURRENT : 0,
@@ -105,6 +109,7 @@ def main():
         SourceFeatures.BIASDISCAQNV : 'bias disc', 
         SourceFeatures.GASAQN : 'gas', 
         SourceFeatures.OVEN1AQNP : 'oven1',
+        SourceFeatures.OVEN2AQNP : 'oven2',
         SourceFeatures.SAIREM2_FORWARDPOWER : 'RF', 
         SourceFeatures.THOMSON_FORWARDPOWER : 'RF',
         SourceFeatures.SOLINJ_CURRENT : 'solinj',
@@ -126,10 +131,11 @@ def round_described(described, decimals):
         described = described.round({
             (k, 'mean') : v,
             (k, 'std') : min(v+1, 3),
+            (k, 'std%') : min(v+1, 3),
             (k, 'avg_dev') : v,
             (k, 'min') : v,
             (k, '25%') : v,
-            (k, '50%') : v,
+            (k, 'median') : v,
             (k, '75%') : v,
             (k, 'max') : v
             })
@@ -141,7 +147,7 @@ def round_described(described, decimals):
     })
 
 def describe_cluster(cluster_df, features, weight_column):
-    values = ['mean', 'std', 'avg_dev', 'min', '25%', '50%', '75%', 'max']
+    values = ['mean', 'std', 'std%', 'avg_dev', 'min', '25%', 'median', '75%', 'max']
     index = pd.MultiIndex.from_tuples([(p, v) for p in features for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
     
     data = cluster_df.loc[(cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), features].values # TODO maybe only include non breakdown here???
@@ -161,7 +167,7 @@ def describe_cluster(cluster_df, features, weight_column):
     duration_in_seconds = cluster_df[ProcessingFeatures.DATAPOINT_DURATION].sum()
     duration_in_hours = duration_in_seconds / 3600
 
-    description = [[mean[i], std[i], avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(features))]
+    description = [[mean[i], std[i], np.abs(std[i]/mean[i]) * 100, avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(features))]
     description = [item for sublist in description for item in sublist]
     description.append(count)
     description.append(duration_in_hours)
@@ -214,7 +220,7 @@ def calculate_metrics(df, features):
 def parse_args():
     parser = argparse.ArgumentParser(description='Describe clusters')
     parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
-    parser.add_argument('-b', '--count_breakdowns_per_cluster', default='n', type=bool, help='Count how many breakdowns occur per cluster? [y/n]')
+    parser.add_argument('-b', '--count_breakdowns_per_cluster', default='n', type=str, help='Count how many breakdowns occur per cluster? [y/n]')
     parser.add_argument('-v', '--num_clusters_to_visualize', default=20, type=int, help='How many clusters shall be displayed')
     parser.add_argument('-f', '--print_to_file', default='n', type=str, help='Print the results to a file? (y/n)')
     parser.add_argument('-m', '--display_metrics', default='n', type=str, help='Print clustering metrics? (y/n)')

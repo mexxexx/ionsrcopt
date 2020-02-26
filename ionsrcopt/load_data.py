@@ -73,6 +73,7 @@ def convert_column_types(df):
         SourceFeatures.SOURCEHTAQNI : 'float32',
         SourceFeatures.BCT05_CURRENT : 'float32',
         SourceFeatures.BCT25_CURRENT : 'float32',
+        SourceFeatures.BCT41_CURRENT : 'float32',
         ProcessingFeatures.SOURCE_STABILITY : 'int32',
         ProcessingFeatures.HT_VOLTAGE_BREAKDOWN : 'int32',
         ProcessingFeatures.DATAPOINT_DURATION : 'float32',

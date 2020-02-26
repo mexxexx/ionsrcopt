@@ -20,18 +20,21 @@ def main():
     ######################
 
     clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
-    filename = 'JanNov2016.csv' # The file to load
+    filename = 'JanNov2018.csv' # The file to load
     
     features = [
         SourceFeatures.BIASDISCAQNV, 
         SourceFeatures.GASAQN, 
         SourceFeatures.OVEN1AQNP,
-        SourceFeatures.THOMSON_FORWARDPOWER,
+        #SourceFeatures.OVEN2AQNP,
+        #SourceFeatures.THOMSON_FORWARDPOWER,
+        SourceFeatures.SAIREM2_FORWARDPOWER,
         SourceFeatures.SOLINJ_CURRENT,
         SourceFeatures.SOLCEN_CURRENT,
         SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
-        SourceFeatures.BCT25_CURRENT] # Features to be displayed 
+        SourceFeatures.BCT25_CURRENT,
+        ProcessingFeatures.SOURCE_RUNNING] # Features to be displayed 
 
     args = parse_args()
     source_stability = args['source_stability']

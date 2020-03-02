@@ -39,7 +39,7 @@ def main():
     args = parse_args()
     source_stability = args['source_stability']
     cluster = args['cluster']
-    show_breakdows = args['show_breakdows']
+    show_breakdowns = args['show_breakdowns']
 
     ######################
     ######## CODE ########
@@ -67,7 +67,7 @@ def main():
         #ax[i].xaxis.set_major_formatter(formatter)
         ax[i].set_title("{}".format(parameter))
         ax[i].tick_params(axis='both', which='major')
-        if show_breakdows:
+        if show_breakdowns:
             #ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
             ax[i].plot_date(dates_breakdown, df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
         #ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
@@ -97,13 +97,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description='View time development of clusters')
     parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
     parser.add_argument('-c', '--cluster', default=None, type=int, help='The cluster you want to look at, or None for all data')
-    parser.add_argument('-b', '--show_breakdows', default=False, type=bool, help='True or False (default) if you want to display the breakdown points (in a different color)')
+    parser.add_argument('-b', '--show_breakdowns', default=False, type=bool, help='True or False (default) if you want to display the breakdown points (in a different color)')
 
     args = parser.parse_args()
 
     return {'source_stability' : args.source_stability, 
             'cluster' : args.cluster,
-            'show_breakdows' : args.show_breakdows}
+            'show_breakdowns' : args.show_breakdowns}
 
 if __name__ == "__main__":
     main()

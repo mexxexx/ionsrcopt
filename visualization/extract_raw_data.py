@@ -14,8 +14,8 @@ def main():
     ######################
 
     clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
-    filename = 'JanNov2018_bct41.csv' # The file to load
-    feature = SourceFeatures.BCT41_CURRENT
+    filename = 'MayDec2015_htv.csv' # The file to load
+    feature = SourceFeatures.SOURCEHTAQNV
 
     args = parse_args()
     source_stability = args['source_stability']

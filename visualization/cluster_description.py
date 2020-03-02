@@ -24,16 +24,16 @@ def main():
     #clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
     #filename = 'JanNov2018_lowbandwidth.csv' # The file to load
 
-    input_file = '../Data_Clustered/MayDec2015.csv'
-    output_file = './Results/2015.csv'
+    input_file = '../Data_Clustered/JanNov2018.csv'
+    output_file = './Results/2018.csv'
 
     features = [
         SourceFeatures.BIASDISCAQNV, 
         SourceFeatures.GASAQN, 
         SourceFeatures.OVEN1AQNP,
-        SourceFeatures.OVEN2AQNP,
-        SourceFeatures.THOMSON_FORWARDPOWER,
-        #SourceFeatures.SAIREM2_FORWARDPOWER,
+        #SourceFeatures.OVEN2AQNP,
+        #SourceFeatures.THOMSON_FORWARDPOWER,
+        SourceFeatures.SAIREM2_FORWARDPOWER,
         SourceFeatures.SOLINJ_CURRENT,
         SourceFeatures.SOLCEN_CURRENT,
         SourceFeatures.SOLEXT_CURRENT,
@@ -73,7 +73,7 @@ def main():
     described[('DENSITY', 'percentage')] = described[('DURATION', 'in_hours')] / total_duration * 100
 
     # Gather statistics to output
-    wanted_statistics = get_wanted_statistics(features, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours')] 
+    wanted_statistics = get_wanted_statistics(features, statistics) + [('DENSITY', 'percentage'), ('DURATION', 'in_hours'), ('DURATION', 'longest_in_hours'), ('DURATION', 'num_splits')] 
     if count_breakdowns_per_cluster:
         wanted_statistics += [('num_breakdowns', 'per_hour')]
 
@@ -92,6 +92,7 @@ def main():
     print("Rounding values...")
     printable_clusters = described[wanted_statistics].head(n=num_clusters_to_visualize)
     print("Sum of densities of printed clusters: {:.1f}%".format(printable_clusters[('DENSITY', 'percentage')].sum()))
+    print("Sum of duration of printed clusters when source was running: {:.1f}".format(printable_clusters.loc[printable_clusters.index >= 0, ('DURATION', 'in_hours')].sum()))
     printable_clusters = round_described(printable_clusters, {
         SourceFeatures.BIASDISCAQNV : 0, 
         SourceFeatures.GASAQN : 2, 
@@ -143,12 +144,14 @@ def round_described(described, decimals):
     return described.round({
         ('DENSITY', 'percentage') : 1,
         ('DURATION', 'in_hours') : 1,
+        ('DURATION', 'longest_in_hours') : 1,
+        ('DURATION', 'num_splits') : 0,
         ('num_breakdowns', 'per_hour') : 2
     })
 
 def describe_cluster(cluster_df, features, weight_column):
     values = ['mean', 'std', 'std%', 'avg_dev', 'min', '25%', 'median', '75%', 'max']
-    index = pd.MultiIndex.from_tuples([(p, v) for p in features for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('num_breakdowns', 'per_hour')])
+    index = pd.MultiIndex.from_tuples([(p, v) for p in features for v in values] + [('DENSITY', 'count'), ('DURATION', 'in_hours'), ('DURATION', 'longest_in_hours'), ('DURATION', 'num_splits'), ('num_breakdowns', 'per_hour')])
     
     data = cluster_df.loc[(cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), features].values # TODO maybe only include non breakdown here???
     weights = cluster_df.loc[(cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0), weight_column].values
@@ -167,27 +170,43 @@ def describe_cluster(cluster_df, features, weight_column):
     duration_in_seconds = cluster_df[ProcessingFeatures.DATAPOINT_DURATION].sum()
     duration_in_hours = duration_in_seconds / 3600
 
+    duration_longest, duration_num_splits = get_cluster_duration(cluster_df, weight_column)
+    duration_longest /= 3600
+
     description = [[mean[i], std[i], np.abs(std[i]/mean[i]) * 100, avg_dev[i], quantiles[0][i], quantiles[1][i], quantiles[2][i], quantiles[3][i], quantiles[4][i]] for i in range(len(features))]
     description = [item for sublist in description for item in sublist]
     description.append(count)
     description.append(duration_in_hours)
+    description.append(duration_longest)
+    description.append(duration_num_splits)
     description.append(cluster_df.loc[cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, ProcessingFeatures.HT_VOLTAGE_BREAKDOWN].nunique() / duration_in_hours)
     
     return pd.Series(description, index=index)
 
-def get_cluster_duration(cluster_df):
-    index_data = cluster_df.index.values
-    continuous_interval_beginning_points =  index_data[np_shift(index_data, num=1, fill_value=-1) != index_data - 1]
-    continuous_interval_end_points = index_data[np_shift(index_data, num=-1, fill_value=-1) != index_data + 1]
-    
-    duration = 0
-    for start, end in zip(continuous_interval_beginning_points, continuous_interval_end_points):
-        time_start = cluster_df.loc[start, SourceFeatures.TIMESTAMP]
-        time_end = cluster_df.loc[end, SourceFeatures.TIMESTAMP]
-        delta = time_end - time_start
-        duration += delta.total_seconds()
 
-    return duration
+def timedelta_breaks(timedelta):
+    if not pd.isnull(timedelta):
+        return timedelta.total_seconds() > 3600
+    else:
+        return True
+
+
+def get_cluster_duration(cluster_df, weight_column):
+    continuous_periods_starts = np.flatnonzero((cluster_df.index.to_series().diff(1)).apply(timedelta_breaks).values)
+
+    duration_longest = 0
+    duration_num_splits = len(continuous_periods_starts)
+    continuous_periods_starts = np.append(continuous_periods_starts, cluster_df.index.size)
+
+    for i in range(1, len(continuous_periods_starts)):
+        time_end = cluster_df.index.values[continuous_periods_starts[i]-1]
+        time_start = cluster_df.index.values[continuous_periods_starts[i-1]]
+        duration = cluster_df.loc[(cluster_df.index >= time_start) & (cluster_df.index <= time_end), weight_column].sum()
+        
+        if duration > duration_longest:
+            duration_longest = duration
+
+    return duration_longest, duration_num_splits
 
 def np_shift(arr, num, fill_value=np.nan):
     result = np.empty_like(arr)

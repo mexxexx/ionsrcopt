@@ -2,7 +2,7 @@ import pandas as pd
 import argparse
 import sys, os
 
-sys.path.insert(1, os.path.abspath('../ionsrcopt'))
+sys.path.insert(1, os.path.abspath("../ionsrcopt"))
 import load_data as ld
 from source_features import SourceFeatures
 from processing_features import ProcessingFeatures
@@ -13,12 +13,12 @@ def main():
     ###### SETTINGS ######
     ######################
 
-    clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data 
-    filename = 'MayDec2015_htv.csv' # The file to load
+    clustered_data_folder = "../Data_Clustered/"  # Base folder of clustered data
+    filename = "MayDec2015_htv.csv"  # The file to load
     feature = SourceFeatures.SOURCEHTAQNV
 
     args = parse_args()
-    source_stability = args['source_stability']
+    source_stability = args["source_stability"]
 
     output_filename = filename + feature + str(source_stability) + ".csv"
 
@@ -40,12 +40,18 @@ def main():
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='View time development of clusters')
-    parser.add_argument('-s', '--source_stability', default=1, type=int, help='1 if you want to look at the stable source, 0 else')
+    parser = argparse.ArgumentParser(description="View time development of clusters")
+    parser.add_argument(
+        "-s",
+        "--source_stability",
+        default=1,
+        type=int,
+        help="1 if you want to look at the stable source, 0 else",
+    )
 
     args = parser.parse_args()
 
-    return {'source_stability' : args.source_stability}
+    return {"source_stability": args.source_stability}
 
 
 if __name__ == "__main__":

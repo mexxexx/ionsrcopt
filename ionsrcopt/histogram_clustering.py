@@ -3,6 +3,7 @@ import numpy as np
 import itertools
 from statsmodels.stats.weightstats import DescrStatsW
 
+
 def generate_density_histogram(df, columns, bins):
     """ From the supplied data generates a histogram, where the value of each bin indicates how many items lay inside, in percent. I.e summing over the whole histogram yields 1.
 
@@ -18,9 +19,12 @@ def generate_density_histogram(df, columns, bins):
 
     H, edges = np.histogramdd(df[columns].values, bins=bins, density=True)
 
-    normalization_factor = np.prod([abs(edges[i][1] - edges[i][0]) for i in range(len(bins))])
+    normalization_factor = np.prod(
+        [abs(edges[i][1] - edges[i][0]) for i in range(len(bins))]
+    )
     H = H * normalization_factor
     return H, edges
+
 
 # Nearest neighbour clustering
 def do_BFS_step(p, clusters, current_cluster, bins, histogram_values, threshold):
@@ -39,9 +43,11 @@ def do_BFS_step(p, clusters, current_cluster, bins, histogram_values, threshold)
     """
 
     result = []
-    if clusters[p] >= 0 or histogram_values[p] < threshold: # Node has to be ignored. Else assign to cluster and find children.
+    if (
+        clusters[p] >= 0 or histogram_values[p] < threshold
+    ):  # Node has to be ignored. Else assign to cluster and find children.
         return result
-    
+
     clusters[p] = current_cluster
     for i in range(len(p)):
         if p[i] > 0:
@@ -53,6 +59,7 @@ def do_BFS_step(p, clusters, current_cluster, bins, histogram_values, threshold)
             child[i] += 1
             result.append(tuple(child))
     return result
+
 
 def nearest_neighbour_clustering(histogram_values, bins, density_threshold):
     """ Searches for clusters in the given histogram, where all bins with a density below the threshold are discarded as noise. For clustering BFS is used, i.e. clusters are connected components of the underlying graph.
@@ -76,19 +83,38 @@ def nearest_neighbour_clustering(histogram_values, bins, density_threshold):
     for p in perms:
         if clusters[p] >= 0 or histogram_values[p] < density_threshold:
             continue
-        
+
         print("Started search for cluster {}".format(current_cluster))
-        nodes_to_check = do_BFS_step(p, clusters, current_cluster, bins, histogram_values, density_threshold)
+        nodes_to_check = do_BFS_step(
+            p, clusters, current_cluster, bins, histogram_values, density_threshold
+        )
         while len(nodes_to_check) > 0:
             node = nodes_to_check.pop(0)
-            nodes_to_check.extend(do_BFS_step(tuple(node), clusters, current_cluster, bins, histogram_values, density_threshold))
-        
+            nodes_to_check.extend(
+                do_BFS_step(
+                    tuple(node),
+                    clusters,
+                    current_cluster,
+                    bins,
+                    histogram_values,
+                    density_threshold,
+                )
+            )
+
         current_cluster += 1
 
     print("Found {} cluster(s)".format(current_cluster))
     return current_cluster, clusters
 
-def create_cluster_frame(histogram_edges, histogram_values, bins, clusters, columns, cluster_column_name='CLUSTER'): 
+
+def create_cluster_frame(
+    histogram_edges,
+    histogram_values,
+    bins,
+    clusters,
+    columns,
+    cluster_column_name="CLUSTER",
+):
     """ Constructs a Data Frame from a histogram and cluster results
 
     Parameters:
@@ -102,11 +128,18 @@ def create_cluster_frame(histogram_edges, histogram_values, bins, clusters, colu
     Returns:
         DataFrame: A frame that contains density and cluster information about every bin
     """
-    
+
     l = [range(b) for b in bins]
     perms = list(itertools.product(*l))
-    values = [[(histogram_edges[i][perm[i]] + histogram_edges[i][perm[i]+1])*0.5 for i in range(len(bins))] + [histogram_values[perm], clusters[perm]] for perm in perms]
-    clustered = pd.DataFrame(values, columns=columns + ['DENSITY', cluster_column_name])
+    values = [
+        [
+            (histogram_edges[i][perm[i]] + histogram_edges[i][perm[i] + 1]) * 0.5
+            for i in range(len(bins))
+        ]
+        + [histogram_values[perm], clusters[perm]]
+        for perm in perms
+    ]
+    clustered = pd.DataFrame(values, columns=columns + ["DENSITY", cluster_column_name])
     return clustered
 
 
@@ -122,17 +155,43 @@ def describe_cluster(cluster, columns):
     """
 
     values = cluster.values
-    dstats = DescrStatsW(values, cluster['DENSITY'].values if len(values) > 1 else None)
+    dstats = DescrStatsW(values, cluster["DENSITY"].values if len(values) > 1 else None)
     mean = dstats.mean
     std = dstats.std
     quantiles = dstats.quantile(0.5, return_pandas=False)
-    
-    result_columns = [[mean[i], std[i], std[i] / abs(mean[i]) * 100, cluster[columns[i]].min(), quantiles[0][i], cluster[columns[i]].max()] for i in range(len(columns))]
-    result = list(itertools.chain(*result_columns)) + [cluster['DENSITY'].count(), cluster['DENSITY'].sum() * 100]
-    
-    value_columns = [[(col, 'mean'), (col, 'std'), (col, 'varC (%)'), (col, 'min'), (col, 'median'), (col, 'max')] for col in columns]
-    index = list(itertools.chain(*value_columns)) + [('DENSITY', 'count'), ('DENSITY', 'total')]
-    
+
+    result_columns = [
+        [
+            mean[i],
+            std[i],
+            std[i] / abs(mean[i]) * 100,
+            cluster[columns[i]].min(),
+            quantiles[0][i],
+            cluster[columns[i]].max(),
+        ]
+        for i in range(len(columns))
+    ]
+    result = list(itertools.chain(*result_columns)) + [
+        cluster["DENSITY"].count(),
+        cluster["DENSITY"].sum() * 100,
+    ]
+
+    value_columns = [
+        [
+            (col, "mean"),
+            (col, "std"),
+            (col, "varC (%)"),
+            (col, "min"),
+            (col, "median"),
+            (col, "max"),
+        ]
+        for col in columns
+    ]
+    index = list(itertools.chain(*value_columns)) + [
+        ("DENSITY", "count"),
+        ("DENSITY", "total"),
+    ]
+
     return pd.Series(result, index=pd.MultiIndex.from_tuples(index))
 
 
@@ -147,5 +206,7 @@ def describe_clusters(df, columns):
         DataFrame: Descriptive frame sorted by density
     """
 
-    result = df[columns + ['CLUSTER']].groupby('CLUSTER').apply(describe_cluster, columns)
-    return result.sort_values(('DENSITY', 'total'), ascending=0)
+    result = (
+        df[columns + ["CLUSTER"]].groupby("CLUSTER").apply(describe_cluster, columns)
+    )
+    return result.sort_values(("DENSITY", "total"), ascending=0)

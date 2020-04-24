@@ -1,11 +1,15 @@
 import pandas as pd
 import numpy as np
 
+from scipy import signal
+
+
 def classify_using_var_threshold(values, threshold):
     """ Classify values based on the variance exceeding a certain threshold """
 
     var = np.var(values)
     return int(var >= threshold)
+
 
 def detect_breakdowns(df, ht_current_column, window_size=40, threshold=0.5):
     """ Detection of high voltage breakdown based on standard deviation exceding a certain threshold that has to be determined by experiments.
@@ -25,15 +29,31 @@ def detect_breakdowns(df, ht_current_column, window_size=40, threshold=0.5):
 
     result = np.zeros(len(df.index))
     values = df[ht_current_column].values
-    times = (df.index.astype('int64') * 1E-9).values
-    
+    times = (df.index.astype("int64") * 1e-9).values
+
     current_breakdown = 0
     for i in range(len(values) - window_size):
-        is_breakdown = classify_using_var_threshold(values[i:i+window_size], threshold)
+        is_breakdown = classify_using_var_threshold(
+            values[i : i + window_size], threshold
+        )
         if is_breakdown:
             if not result[i]:
                 current_breakdown = times[i]
-                
-            result[i:(i + window_size)] = current_breakdown
+
+            result[i : (i + window_size)] = current_breakdown
+
+    return result
+
+
+def count_sparks(ht_voltage, breakdowns, threshold=1000):
+    ht_voltage = ht_voltage.copy()
+    ht_voltage[breakdowns == 0] = threshold + 1
+
+    result = np.zeros(len(ht_voltage.index))
+    values = ht_voltage.values
+    times = (ht_voltage.index.astype("int64") * 1e-9).values
+
+    peaks, _ = signal.find_peaks(-values, height=-threshold, prominence=threshold / 2)
+    result[peaks] = times[peaks]
 
     return result

@@ -15,13 +15,13 @@
 !/visualization
 /visualization/Results/*
 
-# Allow the Preparation Folder, but only specified files
+# Allow the Preparation Folder, but ignore some unimportant files
 !/Preparation
-/Preparation/*
-# Data loading notebook
-!/Preparation/Data_Loading.ipynb
-# Preprocessing notebook
-!/Preparation/Preprocessing.ipynb
+/Preparation/Automatic_Source_Stability.ipynb
+/Preparation/Clustering_3D_Test.ipynb
+/Preparation/High Voltage Breakdown Cleaning.ipynb
+/Preparation/Histogram_Classification.ipynb
+/Preparation/Multidimensional_Distances.ipynb
 
 # Allow the Clustering Folder, but only specified files
 !/Clustering

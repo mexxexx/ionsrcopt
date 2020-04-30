@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 sys.path.insert(1, os.path.abspath("../ionsrcopt"))
 from source_features import SourceFeatures
 from processing_features import ProcessingFeatures
-from voltage_breakdowns import count_sparks, detect_breakdowns
+from voltage_breakdowns import detect_sparks, detect_breakdowns
 from source_stability import calculate_source_running
 import load_data as ld
 
 
 def main():
-    input_file = "../Data_Raw/May2018.csv"
+    input_file = "../Data_Raw/Nov2018.csv"
     columns = [
         SourceFeatures.TIMESTAMP,
         SourceFeatures.BCT05_CURRENT,
@@ -36,7 +36,7 @@ def main():
     ).astype("int64")
 
     threshold = 1000
-    df[ProcessingFeatures.HT_SPARKS_COUNTER] = count_sparks(
+    df[ProcessingFeatures.HT_SPARKS_COUNTER] = detect_sparks(
         df[SourceFeatures.SOURCEHTAQNV], breakdowns, threshold
     )
     df.loc[

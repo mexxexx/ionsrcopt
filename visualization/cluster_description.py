@@ -46,7 +46,7 @@ def main(
     ]  # Features t
 
     if year == 2018:
-        input_file = "../Data_Clustered/JanNov2018.csv"
+        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
         output_file = "./Results/2018_{}.csv".format(source_stability)
         features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
     elif year == 2016:
@@ -344,8 +344,8 @@ def describe_cluster(cluster_df, features, weight_column, oven_refills):
 
     description.append(
         cluster_df.loc[
-            cluster_df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0,
-            ProcessingFeatures.HT_VOLTAGE_BREAKDOWN,
+            cluster_df[ProcessingFeatures.HT_SPARKS_COUNTER] > 0,
+            ProcessingFeatures.HT_SPARKS_COUNTER,
         ].nunique()
         / duration_in_hours
     )
@@ -362,7 +362,7 @@ def timedelta_breaks(timedelta, min_lenght):
 
 def get_cluster_duration(cluster_df, weight_column):
     continuous_periods_starts = np.flatnonzero(
-        (cluster_df.index.to_series().diff(1))
+        (cluster_df.index.to_series(keep_tz=True).diff(1))
         .apply(timedelta_breaks, min_lenght=3600)
         .values
     )
@@ -375,8 +375,8 @@ def get_cluster_duration(cluster_df, weight_column):
     )
 
     for i in range(1, len(continuous_periods_starts)):
-        time_end = cluster_df.index.values[continuous_periods_starts[i] - 1]
-        time_start = cluster_df.index.values[continuous_periods_starts[i - 1]]
+        time_end = cluster_df.index[continuous_periods_starts[i] - 1]
+        time_start = cluster_df.index[continuous_periods_starts[i - 1]]
         duration = cluster_df.loc[
             (cluster_df.index >= time_start) & (cluster_df.index <= time_end),
             weight_column,

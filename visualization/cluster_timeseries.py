@@ -33,7 +33,7 @@ def main(year, source_stability, cluster, show_breakdowns):
     ]  # Features to be displayed
 
     if year == 2018:
-        input_file = "../Data_Clustered/JanNov2018.csv"
+        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
         # features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
     elif year == 2016:
         input_file = "../Data_Clustered/JanNov2016.csv"

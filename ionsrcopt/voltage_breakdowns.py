@@ -45,11 +45,11 @@ def detect_breakdowns(df, ht_current_column, window_size=40, threshold=0.5):
     return result
 
 
-def count_sparks(ht_voltage, breakdowns, threshold=1000):
+def detect_sparks(ht_voltage, breakdowns, threshold=1000):
     ht_voltage = ht_voltage.copy()
     ht_voltage[breakdowns == 0] = threshold + 1
 
-    result = np.zeros(len(ht_voltage.index))
+    result = np.zeros(len(ht_voltage.index), dtype="int64")
     values = ht_voltage.values
     times = (ht_voltage.index.astype("int64") * 1e-9).values
 

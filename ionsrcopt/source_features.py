@@ -1,4 +1,8 @@
 class SourceFeatures(object):
+    """ This class provides the currently supported source
+    features and their names in CALS.
+    """
+
     TIMESTAMP = "UTC_TIME"
     BIASDISCAQNV = "IP.NSRCGEN:BIASDISCAQNV"
     GASAQN = "IP.NSRCGEN:GASAQN"

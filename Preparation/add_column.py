@@ -32,17 +32,20 @@ def main():
     output_folder = "../Data_Clustered/"
     new_column_name = ProcessingFeatures.HT_SPARKS_COUNTER
 
-    #add_column_to_preprocessing(year, start_month, end_month, new_column_name, input_folder, output_folder)
-    add_column_to_clustered(year, start_month, end_month, new_column_name, input_folder, output_folder)
+    # add_column_to_preprocessing(year, start_month, end_month, new_column_name, input_folder, output_folder)
+    add_column_to_clustered(
+        year, start_month, end_month, new_column_name, input_folder, output_folder
+    )
 
-def add_column_to_preprocessing(year, start_month, end_month, new_column_name, input_folder, output_folder):
+
+def add_column_to_preprocessing(
+    year, start_month, end_month, new_column_name, input_folder, output_folder
+):
     suffix = "_htv"
 
     for m in months[months.index(start_month) : months.index(end_month) + 1]:
         print(f"Adding column for month {m}{year}")
-        new_column = load_new_column(
-            year, m, m, new_column_name, input_folder
-        )
+        new_column = load_new_column(year, m, m, new_column_name, input_folder)
         file_to_add_to = f"{output_folder}{m}{year}.csv"
         df = load_existing_data(file_to_add_to)
         df = add_column(df, new_column, new_column_name)
@@ -50,9 +53,11 @@ def add_column_to_preprocessing(year, start_month, end_month, new_column_name, i
         output_file = f"{output_folder}{m}{year}{suffix}.csv"
         df = df.round(4)
         df.to_csv(output_file)
-    
 
-def add_column_to_clustered(year, start_month, end_month, new_column_name, input_folder, output_folder):
+
+def add_column_to_clustered(
+    year, start_month, end_month, new_column_name, input_folder, output_folder
+):
     input_file = f"{output_folder}/JanNov2016_htv.csv"
     output_file = f"{output_folder}/JanNov2016_sparks.csv"
 
@@ -75,7 +80,7 @@ def load_new_column(year, start_month, end_month, new_column_name, data_folder):
             filename,
             index_col=SourceFeatures.TIMESTAMP,
             usecols=[SourceFeatures.TIMESTAMP, new_column_name],
-        )    
+        )
         df.index = pd.to_datetime(df.index)
 
         if df.index.tz is None:

@@ -1,3 +1,42 @@
+""" With this script you can visualize a cluster as a time series. You
+can select to see the the HT voltage breakdowns or hide them. Furthermore,
+you can look at a whole stability period instead of only at a certain cluster.
+
+How to use it
+-------------
+Before you can run the script, you will probably need to set it up.
+
+In the main function edit the input files for the different years and if
+applicable add more years. The `input_file` has to be a .csv file as produced
+by the clustering notebook, in particular every row represents a data point, 
+the first row have to be the column names, the first column the timestamps of 
+each data point.
+
+Edit the `features` list to include all source features you are interested 
+in seeing. Note that these features have to be columns in your input file.
+
+
+Command line Arguments
+-----------------------
+Once everything is configured properly you can run the script with
+``python cluster_timeseries.py [-param][option]``. You can give it
+several command line parameters that are described also with the
+help flag (-h).
+
+-y: Here you can pass the year you are interested in, depending on what
+you have configured in the main method. (default 2018)
+
+-s: Pass a 1 to see the clusters of the stable periods and a 0 for the 
+unstable ones. (default 1)
+
+-c: Pass the cluster id of the cluster you want to visualize. If you do not
+pass anything (None), then the whole stability period will be plotted. 
+(default None)
+
+-b: Pass True if you want to display the voltage breakdowns and False
+otherwise. (default False)
+"""
+
 import pandas as pd
 
 pd.plotting.register_matplotlib_converters()
@@ -21,6 +60,13 @@ def main(year, source_stability, cluster, show_breakdowns):
     ###### SETTINGS ######
     ######################
 
+    if year == 2018:
+        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
+        # features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
+    elif year == 2016:
+        input_file = "../Data_Clustered/JanNov2016.csv"
+        # features.append(SourceFeatures.THOMSON_FORWARDPOWER)
+
     features = [
         # SourceFeatures.BIASDISCAQNV,
         # SourceFeatures.GASAQN,
@@ -31,13 +77,6 @@ def main(year, source_stability, cluster, show_breakdowns):
         # SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
     ]  # Features to be displayed
-
-    if year == 2018:
-        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
-        # features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
-    elif year == 2016:
-        input_file = "../Data_Clustered/JanNov2016.csv"
-        # features.append(SourceFeatures.THOMSON_FORWARDPOWER)
 
     features.append(SourceFeatures.BCT25_CURRENT)
 
@@ -100,20 +139,6 @@ def main(year, source_stability, cluster, show_breakdowns):
         left=0.05, bottom=0.05, right=0.95, top=0.93, wspace=None, hspace=0.4
     )
     plt.show()
-
-
-class DateFormatter(Formatter):
-    def __init__(self, dates, fmt="%Y-%m-%d %H:%M"):
-        self.dates = dates
-        self.fmt = fmt
-
-    def __call__(self, x, pos=0):
-        "Return the label for time x at position pos"
-        ind = int(np.round(x))
-        if ind >= len(self.dates) or ind < 0:
-            return ""
-
-        return pd.to_datetime(str(self.dates[ind])).strftime(self.fmt)
 
 
 def parse_args():

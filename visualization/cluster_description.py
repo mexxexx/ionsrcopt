@@ -1,3 +1,59 @@
+""" This script creates the summaries for the clusters, i.e. you 
+can use it do display median, standard deviation, and other
+statistical properties, as well as further information such as oven
+refills, breakdown rate and duration.
+
+The result are sorted in descending order based on the total duration.
+
+How to use it
+-------------
+Before you use the script for the first time, you probably have 
+to configure it.
+
+In the main function edit the input files for the different years and if
+applicable add more years. The `input_file` has to be a .csv file as produced
+by the clustering notebook, in particular every row represents a data point, 
+the first row have to be the column names, the first column the timestamps of 
+each data point.
+
+Edit the `features` list to include all source features you are interested 
+in seeing. Note that these features have to be columns in your input file.
+
+Then, configure the statistics you are interested in by adding them to
+the `statistics` list. Available are
+
+* mean
+* median
+* std (standard deviation)
+* std% (standard deviation in percent of the mean)
+* avg_dev (average deviation of mean, i.e. \sum_i \abs{x_i - mean})
+* min (minimum value)
+* 25% (lower quartile)
+* 75% (upper quartile)
+* max (maximum value)
+
+Command line Arguments
+-----------------------
+Once everything is configured properly you can run the script with
+``python cluster_description.py [-param][option]``. You can give it
+several command line parameters that are described also with the
+help flag (-h).
+
+-y: Here you can pass the year you are interested in, depending on what
+you have configured in the main method. (default 2018)
+
+-s: Pass a 1 to see the clusters of the stable periods and a 0 for the 
+unstable ones. (default 1)
+
+-f: Pass a y if you want to save the results to a file, otherwise (passing n) 
+they will be printed to the console. (default n)
+
+-b: Pass a y if you want to know the breakdown rate per hour, otherwise n.
+(default n)
+
+-v: The number of clusters to visualize. (default 20)
+"""
+
 import pandas as pd
 
 pd.set_option("display.max_columns", 500)
@@ -30,8 +86,18 @@ def main(
     ###### SETTINGS ######
     ######################
 
-    # clustered_data_folder = '../Data_Clustered/' # Base folder of clustered data
-    # filename = 'JanNov2018_lowbandwidth.csv' # The file to load
+    if year == 2018:
+        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
+        output_file = "./Results/2018_{}.csv".format(source_stability)
+        features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
+    elif year == 2016:
+        input_file = "../Data_Clustered/JanNov2016.csv"
+        output_file = "./Results/2016_{}.csv".format(source_stability)
+        features.append(SourceFeatures.THOMSON_FORWARDPOWER)
+    elif year == 2015:
+        input_file = "../Data_Clustered/MayDec2015.csv"
+        output_file = "./Results/2015_{}.csv".format(source_stability)
+        features.append(SourceFeatures.THOMSON_FORWARDPOWER)
 
     features = [
         SourceFeatures.BIASDISCAQNV,
@@ -43,16 +109,7 @@ def main(
         SourceFeatures.SOLEXT_CURRENT,
         SourceFeatures.SOURCEHTAQNI,
         SourceFeatures.BCT25_CURRENT,
-    ]  # Features t
-
-    if year == 2018:
-        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
-        output_file = "./Results/2018_{}.csv".format(source_stability)
-        features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
-    elif year == 2016:
-        input_file = "../Data_Clustered/JanNov2016.csv"
-        output_file = "./Results/2016_{}.csv".format(source_stability)
-        features.append(SourceFeatures.THOMSON_FORWARDPOWER)
+    ]  # Features to load
 
     statistics = ["median", "std%"]  # Statistics we are interested in
 
@@ -75,7 +132,7 @@ def main(
             return
 
     # Calculate oven refills
-    oven_refill_ends = calculate_oven_refill_ends(df)
+    oven_refill_ends = calculate_oven_refill_ends(df[SourceFeatures.OVEN1AQNP])
     if year == 2018:
         oven_refill_ends = clear_refills_2018(oven_refill_ends)
     elif year == 2016:
@@ -181,6 +238,24 @@ def main(
 
 
 def round_described(described, decimals):
+    """ For printing purposes the results should be rounded.
+    This is done with this function and the desired number of
+    decimals are passed per parameter as an argument.
+
+    Parameters
+    ----------
+    described : DataFrame
+        The DataFrame you want to print
+    decimals : dict
+        Keys are parameters (columns of the described DF) and values
+        are the number of decimal places you want to see. 
+    
+    Returns
+    -------
+    DataFrame
+        Rounded version of ``described``
+    """
+
     for k, v in decimals.items():
         described = described.round(
             {
@@ -210,6 +285,22 @@ def round_described(described, decimals):
 
 
 def clear_refills_2018(oven_refill_ends):
+    """ Some of the automatically found refills in 2018 are incorrect and
+    result e.g. from short oven stops. They are cleared out with this
+    function based on manual selection and comparison with CALS.
+
+    Parameters
+    ----------
+    oven_refill_ends : list of timestamps
+        The automatically detected _ends_ of the refill periods (time when the
+        oven was ramped up again)
+
+    Returns
+    -------
+    list of timestamps
+        *End*-points of the periods that were real refills in 2018
+    """
+
     remove_dates = [
         "2018-02-20 15h",
         "2018-03-27 10h",
@@ -226,6 +317,22 @@ def clear_refills_2018(oven_refill_ends):
 
 
 def clear_refills_2016(oven_refill_ends):
+    """ Some of the automatically found refills in 2016 are incorrect and
+    result e.g. from short oven stops. They are cleared out with this
+    function based on manual selection and comparison with CALS.
+
+    Parameters
+    ----------
+    oven_refill_ends : list of timestamps
+        The automatically detected _ends_ of the refill periods (time when the
+        oven was ramped up again)
+
+    Returns
+    -------
+    list of timestamps
+        *End*-points of the periods that were real refills in 2016
+    """
+
     remove_dates = [
         "2016-01-04",
         "2016-01-19",
@@ -239,11 +346,33 @@ def clear_refills_2016(oven_refill_ends):
 
 
 def calculate_oven_refill_ends(df):
+    """ Calculates possible time spans that mark an oven refill.
+
+    These are periods where the *IP.NSRCGEN:OVEN1AQNP* was below 0.1W (off) 
+    for at least 45min continuously.
+
+    TODO: As the results have to be compared with the real data anyways, it
+    might be better to manually enter the refill ends instead of calculating candidates,
+    as there are not many for one year (20-30).
+
+    Parameters
+    ----------
+    oven1 : Series
+        Series with *IP.NSRCGEN:OVEN1AQNP* values
+
+    Returns
+    -------
+    list of timestamps
+        *End*-points of the periods that could have been oven refills.
+        This list might contain false positives, so a manual comparison
+        with the data from CALS has to be done.
+    """
+
     result = []
-    times_where_oven_is_off = df[df[SourceFeatures.OVEN1AQNP] < 0.1].index
+    times_where_oven_is_off = oven1[oven1 < 0.1].index
 
     continuous_periods_starts = np.flatnonzero(
-        (times_where_oven_is_off.to_series().diff(1))
+        (times_where_oven_is_off.to_series(keep_tz=True).diff(1))
         .apply(timedelta_breaks, min_lenght=3600)
         .values
     )
@@ -263,6 +392,50 @@ def calculate_oven_refill_ends(df):
 
 
 def describe_cluster(cluster_df, features, weight_column, oven_refills):
+    """ Create the statistics for a cluster. Datapoints that are part of a breakdown
+    period are excluded.
+
+    Parameters
+    ----------
+    cluster_df : DataFrame
+        A dataframe that contains all points of the cluster you want to describe.
+    features : list of source features
+        All source feature for which the statistics should be generated
+    weight_column : string
+        Name of the column to use for weighting data points, typically
+        `datapoint_duration` (``ProcessingFeatures.DATAPOINT_DURATION``)
+    oven_refills : list of timestamp
+        End of the oven refill periods
+
+    Returns
+    -------
+    Series
+        A Series of the following statistics
+
+        For each parameter in `features`:
+
+            1. mean
+            2. std
+            3. std% (std in percent of mean)
+            4. avg_dev (average deviation of mean)
+            5. min
+            6. 25% (lower quartile)
+            7. median
+            8. 75% (upper quartile)
+            9. max
+
+        Once for the cluster:
+
+            10. Density/count (number of data points in the cluster)
+            11. Duration/in_hours (total duration of cluster)
+            12. Duration/longest (duration of longest fragment)
+            13. Duration/num_splits (number of fragments)
+            14. Refill/index (index of oven refill that came directly before 
+                the beginning of the longest fragment)
+            15. Refill/delta_in_hours (delta from the end of the closest oven refill)
+            16. num_breakdowns/per_hour (number of breakdowns per hour)
+    """
+
     values = ["mean", "std", "std%", "avg_dev", "min", "25%", "median", "75%", "max"]
     index = pd.MultiIndex.from_tuples(
         [(p, v) for p in features for v in values]
@@ -290,9 +463,8 @@ def describe_cluster(cluster_df, features, weight_column, oven_refills):
 
     mean = np.array(stats.mean)  # np.mean(data, axis=0)
     std = np.array(stats.std)  # np.std(data, axis=0)
-    quantiles = stats.quantile(
-        [0, 0.25, 0.5, 0.75, 1], return_pandas=False
-    )  # np.quantile(data, [0, 0.25, 0.5, 0.75, 1], axis=0)
+    quantiles = stats.quantile([0, 0.25, 0.5, 0.75, 1], return_pandas=False)
+    # np.quantile(data, [0, 0.25, 0.5, 0.75, 1], axis=0)
     avg_dev = np.dot(weights, np.absolute(data - mean)) / np.sum(weights)
 
     count = len(data)
@@ -361,6 +533,26 @@ def timedelta_breaks(timedelta, min_lenght):
 
 
 def get_cluster_duration(cluster_df, weight_column):
+    """ Computes the duration of the longest fragment of a cluster.
+    Between two fragments there has to be a break of at least one hour,
+    otherwise they are merged together.
+
+    cluster_df : DataFrame
+        A dataframe that contains all points of the cluster.
+    weight_column : string
+        Name of the column to use for weighting data points, typically
+        `datapoint_duration` (``ProcessingFeatures.DATAPOINT_DURATION``)
+
+    Returns
+    -------
+    duration_longest_start : timestamp
+        Starting time of the longest fragment
+    duration_longest : double
+        Duration of the longest fragment in seconds
+    duration_num_splits : int
+        Total number of fragments
+    """
+
     continuous_periods_starts = np.flatnonzero(
         (cluster_df.index.to_series(keep_tz=True).diff(1))
         .apply(timedelta_breaks, min_lenght=3600)
@@ -403,6 +595,22 @@ def np_shift(arr, num, fill_value=np.nan):
 
 
 def get_wanted_statistics(features, statistics):
+    """ Select the wanted statistics from the whole description
+
+    Parameters
+    ----------
+    features : list of source features
+        All source feature which you are interested in
+    statistics : list of string
+        The statistics you want to select
+    
+    Returns
+    -------
+    list of tuple
+        Tuples in the form (feature, statistic) for all statistics and parameters
+        passed as arguments
+    """
+
     result = [[(param, stat) for stat in statistics] for param in features]
     result = [item for sublist in result for item in sublist]
     return result

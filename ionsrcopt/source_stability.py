@@ -1,8 +1,20 @@
+""" For our analysis we distinguished the source operation into two
+modes: stable operation and unstable operation. 
+
+We make this distinction based on rolling windows over the BCT25 currents
+mean and standard deviation/variance. If they exceed certain thresholds, we
+consider the current as unstable.
+"""
+
 import pandas as pd
 import numpy as np
 
 
 def calculate_source_running(source_current):
+    """ Determines whether the source was running, i.e. if the `source_current` 
+    (typically BCT05 current) was above 0.004mA.
+    """
+
     is_zero_threshold = 0.004
     result = np.zeros(source_current.size, dtype=bool)
     result[source_current > is_zero_threshold] = 1

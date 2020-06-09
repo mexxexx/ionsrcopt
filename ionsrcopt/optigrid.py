@@ -1,3 +1,14 @@
+""" This is an implementation of the Optigrid Algorithm described in 
+"Optimal Grid-Clustering: Towards Breaking the Curse of Dimensionality in High-Dimensional Clustering" 
+by Hinneburg and Keim.
+
+The algorithm is a grid based clustering algorithm, that was developed to make
+clustering possible in high dimensional spaces. The input space is partitioned into a axis parallel
+grid by sequentially adding cutting planes that only intersect regions with a low (estimated) 
+kernel density. The density in the high dimensional space is bounded from above by the kernel
+density of contracting projection onto the coordinate planes. 
+"""
+
 import numpy as np
 from scipy.stats import gaussian_kde
 

@@ -1,4 +1,4 @@
-""" With this script you can visualize a cluster as a time series. You
+""" With the ``cluster_timeseries.py`` script you can visualize a cluster as a time series. You
 can select to see the the HT voltage breakdowns or hide them. Furthermore,
 you can look at a whole stability period instead of only at a certain cluster.
 
@@ -43,6 +43,7 @@ pd.plotting.register_matplotlib_converters()
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import Formatter
+import matplotlib.dates as mdates
 import numpy as np
 import sys
 import os
@@ -61,10 +62,10 @@ def main(year, source_stability, cluster, show_breakdowns):
     ######################
 
     if year == 2018:
-        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
+        input_file = "../Data_Clustered/JanNov2018_sparks_clustered.csv"
         # features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
     elif year == 2016:
-        input_file = "../Data_Clustered/JanNov2016.csv"
+        input_file = "../Data_Clustered/JanNov2016_sparks_clustered.csv"
         # features.append(SourceFeatures.THOMSON_FORWARDPOWER)
 
     features = [
@@ -74,7 +75,8 @@ def main(year, source_stability, cluster, show_breakdowns):
         # SourceFeatures.OVEN2AQNP,
         # SourceFeatures.SOLINJ_CURRENT,
         # SourceFeatures.SOLCEN_CURRENT,
-        # SourceFeatures.SOLEXT_CURRENT,
+        SourceFeatures.SOLEXT_CURRENT,
+        SourceFeatures.SOURCEHTAQNV,
         SourceFeatures.SOURCEHTAQNI,
     ]  # Features to be displayed
 
@@ -103,12 +105,16 @@ def main(year, source_stability, cluster, show_breakdowns):
     dates = df.index.values
     # datesIndices = np.arange(len(dates))
 
-    fig, ax = plt.subplots(len(features), 1, sharex=True)
+    df[SourceFeatures.BCT25_CURRENT] *= 1000
+
+    fig, ax = plt.subplots(len(features), 1, sharex=True, figsize=(6, 6))
     for i, parameter in enumerate(features):
         # formatter = DateFormatter(dates)
         # ax[i].xaxis.set_major_formatter(formatter)
-        ax[i].set_ylabel("{}".format(parameter), fontsize=13)
-        ax[i].tick_params(axis="both", which="major")
+        ax[i].set_ylabel("{}".format(parameter), labelpad=40, fontsize=24)
+        ax[i].set_xlabel("", labelpad=40, fontsize=24)
+        ax[i].tick_params(axis="both", which="major", labelsize=22)
+
         if show_breakdowns:
             # ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, parameter].values, linestyle='', marker='.', markersize=1, color='#ff7f0e')
             ax[i].plot_date(
@@ -121,7 +127,7 @@ def main(year, source_stability, cluster, show_breakdowns):
                 markersize=1,
                 color="red",
             )
-        # ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
+
         ax[i].plot_date(
             dates_nobreakdown,
             df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values,
@@ -130,14 +136,29 @@ def main(year, source_stability, cluster, show_breakdowns):
             markersize=1,
             color="black",
         )
+
+        if show_breakdowns:
+            ymin, ymax = ax[i].get_ylim()
+            ax[i].vlines(
+                df[df[ProcessingFeatures.HT_SPARKS_COUNTER] > 0].index,
+                ymin=ymin,
+                ymax=ymax,
+                color="black",
+                ls="dashed",
+                linewidths=1,
+            )
+        # ax[i].plot(datesIndices[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0], df.loc[df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0, parameter].values, linestyle='', marker='.', markersize=1, color='#1f77b4')
         ax[i].grid(True)
+        ax[i].xaxis.set_major_locator(
+            mdates.HourLocator(interval=24)
+        )  # to get a tick every 24 hours
+        ax[i].xaxis.set_major_formatter(mdates.DateFormatter("%d-%m %H:00"))
 
     figManager = plt.get_current_fig_manager()
-    figManager.window.showMaximized()
-    fig.suptitle("Time development of cluster {}".format(cluster))
-    plt.subplots_adjust(
-        left=0.05, bottom=0.05, right=0.95, top=0.93, wspace=None, hspace=0.4
-    )
+    # figManager.window.showMaximized()
+    # fig.suptitle("Time development of cluster {}".format(cluster))
+    plt.tight_layout()
+    fig.align_ylabels()
     plt.show()
 
 

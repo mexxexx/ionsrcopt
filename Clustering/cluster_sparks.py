@@ -53,13 +53,38 @@ def assign_clusters(df):
 
 
 def reset_breakdown_clusters(df):
-    df.loc[
-        df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0, ProcessingFeatures.CLUSTER
-    ] = np.nan
-    df.loc[
-        df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0,
-        ProcessingFeatures.SOURCE_STABILITY,
-    ] = np.nan
+    voltage_breakdown_beginnings = df.index[
+        (df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0)
+        & (df.shift(1)[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0)
+    ]
+    voltage_breakdown_ends = df.index[
+        (df[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] > 0)
+        & (df.shift(-1)[ProcessingFeatures.HT_VOLTAGE_BREAKDOWN] == 0)
+    ]
+
+    if voltage_breakdown_ends[0] < voltage_breakdown_beginnings[0]:
+        voltage_breakdown_beginnings.insert(0, df.index.values[0])
+
+    if voltage_breakdown_ends[-1] < voltage_breakdown_beginnings[-1]:
+        voltage_breakdown_ends.append(df.index.values[-1])
+
+    for start, end in zip(voltage_breakdown_beginnings, voltage_breakdown_ends):
+        num_of_sparks = (
+            df.loc[
+                (df.index >= start) & (df.index <= end),
+                ProcessingFeatures.HT_SPARKS_COUNTER,
+            ]
+            > 0
+        ).sum()
+        if num_of_sparks > 0:
+            df.loc[
+                (df.index >= start) & (df.index <= end), ProcessingFeatures.CLUSTER
+            ] = np.nan
+            df.loc[
+                (df.index >= start) & (df.index <= end),
+                ProcessingFeatures.SOURCE_STABILITY,
+            ] = np.nan
+
     return df
 
 

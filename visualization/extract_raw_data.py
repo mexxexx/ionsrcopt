@@ -1,3 +1,27 @@
+""" With the `extract_raw_data.py` script, you can extract a .csv
+file that contains all observations of a given feature from a given
+file for a specific source stability.
+
+How to use it
+-------------
+In the code you need to make two selections. First you have to specify
+the folder and filename of the file you want to extract the data from.
+Then, you have to set `feature` to a columns of this input file.
+
+The program will output a .csv file with the name 
+`<filename><feature><source_stability>.csv`. This file will contain two
+columns with the header names `TIMESTAMP` and `<feature>`. Each of the rows
+representing one observation at the specific timestamp. 
+
+Command line arguments
+----------------------
+As command line argument you can provide the source stability you are
+interested in.
+
+-s: Pass a 1 to see the clusters of the stable periods and a 0 for the 
+unstable ones. (default 1)
+"""
+
 import pandas as pd
 import argparse
 import sys, os
@@ -40,7 +64,7 @@ def main():
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="View time development of clusters")
+    parser = argparse.ArgumentParser(description="Extract raw data.")
     parser.add_argument(
         "-s",
         "--source_stability",

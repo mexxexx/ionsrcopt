@@ -1,3 +1,8 @@
+""" All data is loaded from .csv files and stored as pandas DataFrames in memory. 
+
+The `load_data` module provides several functions to make it easier.
+"""
+
 import pandas as pd
 import numpy as np
 
@@ -6,7 +11,8 @@ from processing_features import ProcessingFeatures
 
 
 def read_data_from_csv(filenames, cols_to_read, rows_to_read):
-    """ Read a csv file into a DataFrame
+    """ Read one or multiple csv file into a DataFrame and sets the TIMESTAMP as
+    DateTimeIndex. If multiple files are provided, the resulting DataFrame is sorted by date.
 
     Parameters:
         filenames (list string): Filenames. Concatenates all into one data frame
@@ -102,8 +108,11 @@ def add_previous_data(df, previous_data, fill_nan_with_zeros):
         previous_data (None or String or DataFrame): The data from the previous interval. If None, then this method does nothing. If it is a file, it loads the data from the file. If it is a data frame, the dataa is taken directly from there.
 
     Returns:
-        Timestamp: This is the first timestamp of the original data frame. Everything before was added from previous data
-        DataFrame: The altered frame. It has a few rows at the beginning that include the data from before
+        Timestamp
+            This is the first timestamp of the original data frame. Everything before was added from previous data
+            
+        DataFrame
+            The altered frame. It has a few rows at the beginning that include the data from before
     """
     old_first_index = df.index[0]
     new_rows = []
@@ -142,7 +151,28 @@ def add_previous_data(df, previous_data, fill_nan_with_zeros):
     return old_first_index, df
 
 
-def fill_columns(df, previous_data, fill_nan_with_zeros=False):
+def fill_columns(df, previous_data=None, fill_nan_with_zeros=False):
+    """ In CALS data points are only stored when they have changes, so we
+    can forward fill nan values in the data frame.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The DataFrame that should be forward filled
+
+    previous_data : string (filename) or DataFrame
+        A DataFrame or filename to csv file that contains data from a previous month.
+        If not `None`, then the last value before the first value in `df` is used for forward filling.
+    
+    fill_nan_with_zeros : boolean
+        Some values might not get forward filled (because they are before the first known value). If `True`, 
+        they are set to zero.
+
+    Returns
+    -------
+    DataFrame
+        The forward filled result.
+    """
     print("Forward filling missing values...")
 
     old_first_index, df = add_previous_data(df, previous_data, fill_nan_with_zeros)

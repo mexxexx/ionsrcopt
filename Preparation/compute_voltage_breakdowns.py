@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 pd.plotting.register_matplotlib_converters()
 
@@ -30,16 +31,16 @@ months = [
 
 
 def main(plot):
-    year = 2018
+    year = 2016
     start_month = "Jan"
     end_month = "Nov"
 
-    data_path = "../Data_Preprocessed"
+    data_path = "../Data_Raw"
 
     for i, m in enumerate(
         months[months.index(start_month) : months.index(end_month) + 1]
     ):
-        file_path = f"{data_path}/{m}{year}_htv.csv"
+        file_path = f"{data_path}/{m}{year}.csv"
         print(f"HT sparks for {file_path}")
 
         previous_month_file = None
@@ -84,17 +85,36 @@ def main(plot):
         mask = (df.shift(1) == df).fillna(value=True).astype(bool)
         df = df.where(~mask, np.nan)
 
-        df.to_csv(file_path)
-        print("Saved HT spark search to {}.".format(file_path))
+        # df.to_csv(file_path)
+        # print("Saved HT spark search to {}.".format(file_path))
 
 
 def plot_breakdowns(df):
-    fig, ax = plt.subplots()
-    ax.plot(df[SourceFeatures.SOURCEHTAQNI])
-    ax.vlines(df[~np.isnan(df[ProcessingFeatures.HT_SPARKS_COUNTER])].index, 0, 5)
+    df = df.copy()
 
-    ax2 = ax.twinx()
-    ax2.plot(df[SourceFeatures.SOURCEHTAQNV], color="orange")
+    fig, ax = plt.subplots(1, 1, sharex=True)
+    # ax[0].plot(df[SourceFeatures.SOURCEHTAQNI])
+
+    # ax02 = ax[0].twinx()
+    # ax02.plot(df[SourceFeatures.SOURCEHTAQNV], color="orange")
+
+    if SourceFeatures.SPARK_COUNTER in df:
+        ax.plot(df[SourceFeatures.SPARK_COUNTER], color="black")
+    ymin, ymax = ax.get_ylim()
+
+    ax.vlines(
+        df[df[ProcessingFeatures.HT_SPARKS_COUNTER] > 0].index,
+        ymin=ymin,
+        ymax=ymax,
+        color="black",
+        ls="dashed",
+    )
+    ax.set_ylabel("Spark counter / counts", labelpad=40, fontsize=24)
+    ax.set_xlabel("October 2018", labelpad=20, fontsize=24)
+    ax.xaxis.set_major_locator(mdates.HourLocator(interval=48))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%m %H:00"))
+    ax.tick_params(axis="both", which="major", labelsize=22)
+    ax.grid(True)
 
     plt.show()
 

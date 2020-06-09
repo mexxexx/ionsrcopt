@@ -6,3 +6,5 @@ The Preparation package
     :caption: Scripts:
 
     data_loading
+    compute_voltage_breakdowns
+    add_column

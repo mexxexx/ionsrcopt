@@ -1,3 +1,9 @@
+""" Sometimes it may be necessary to add a column to your preprocessing
+or clustering files, for example if you downloaded a new parameter you are
+interested in. Then you maybe do not want to run the scripts again. In this case
+you can use the ``add_column.py`` script.
+"""
+
 import pandas as pd
 import numpy as np
 

@@ -1,4 +1,4 @@
-""" This script creates the summaries for the clusters, i.e. you 
+""" The ``cluster_description.py`` script creates the summaries for the clusters, i.e. you 
 can use it do display median, standard deviation, and other
 statistical properties, as well as further information such as oven
 refills, breakdown rate and duration.
@@ -86,19 +86,6 @@ def main(
     ###### SETTINGS ######
     ######################
 
-    if year == 2018:
-        input_file = "../Data_Clustered/JanNov2018_sparks_clustered_forward.csv"
-        output_file = "./Results/2018_{}.csv".format(source_stability)
-        features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
-    elif year == 2016:
-        input_file = "../Data_Clustered/JanNov2016.csv"
-        output_file = "./Results/2016_{}.csv".format(source_stability)
-        features.append(SourceFeatures.THOMSON_FORWARDPOWER)
-    elif year == 2015:
-        input_file = "../Data_Clustered/MayDec2015.csv"
-        output_file = "./Results/2015_{}.csv".format(source_stability)
-        features.append(SourceFeatures.THOMSON_FORWARDPOWER)
-
     features = [
         SourceFeatures.BIASDISCAQNV,
         SourceFeatures.GASAQN,
@@ -110,6 +97,19 @@ def main(
         SourceFeatures.SOURCEHTAQNI,
         SourceFeatures.BCT25_CURRENT,
     ]  # Features to load
+
+    if year == 2018:
+        input_file = "../Data_Clustered/JanNov2018_sparks_clustered.csv"
+        output_file = "./Results/2018_{}_sparks.csv".format(source_stability)
+        features.append(SourceFeatures.SAIREM2_FORWARDPOWER)
+    elif year == 2016:
+        input_file = "../Data_Clustered/JanNov2016_sparks_clustered.csv"
+        output_file = "./Results/2016_{}_sparks.csv".format(source_stability)
+        features.append(SourceFeatures.THOMSON_FORWARDPOWER)
+    elif year == 2015:
+        input_file = "../Data_Clustered/MayDec2015_sparks_clustered.csv"
+        output_file = "./Results/2015_{}_sparks.csv".format(source_stability)
+        features.append(SourceFeatures.THOMSON_FORWARDPOWER)
 
     statistics = ["median", "std%"]  # Statistics we are interested in
 
@@ -345,7 +345,7 @@ def clear_refills_2016(oven_refill_ends):
     return [r for r in oven_refill_ends if not r.strftime("%Y-%m-%d") in remove_dates]
 
 
-def calculate_oven_refill_ends(df):
+def calculate_oven_refill_ends(oven1):
     """ Calculates possible time spans that mark an oven refill.
 
     These are periods where the *IP.NSRCGEN:OVEN1AQNP* was below 0.1W (off) 

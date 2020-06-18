@@ -7,6 +7,12 @@ clustering possible in high dimensional spaces. The input space is partitioned i
 grid by sequentially adding cutting planes that only intersect regions with a low (estimated) 
 kernel density. The density in the high dimensional space is bounded from above by the kernel
 density of contracting projection onto the coordinate planes. 
+
+Note that the implementation of Optigrid is not completely deterministic, so
+different runs can yield slightly different result. This is due to a kernel density
+estimation that is only done on a randomly selected sample. However, as the sample
+size is chosen very large (15000), the kernel density will be very similar, so the
+clusters should not be too different when running it a second time.
 """
 
 import numpy as np

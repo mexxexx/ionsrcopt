@@ -16,6 +16,11 @@ as stability and HT voltage breakdown rate.
 This package provides all tools that were used for this analysis so that
 it can also be carried out for future runs.
 
+This documentation is written to be read side by side with the code to facilitate
+the understanding, because most scripts need the user to set parameters in the
+code and don't support a command line only usage. Everything was used on Linux/Ubuntu,
+however it should run on Windows and Mac too.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

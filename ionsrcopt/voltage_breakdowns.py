@@ -24,6 +24,10 @@ broke down. If two breakdowns happened shortly after each other, method 1
 would count only one breakdown, but we are interested in the exact number.
 This methods counts the local minima of the HT voltage that are below a
 certain threshold.
+
+It is important to understand the difference between sparks and breakdowns. For
+this library a breakdown always marks a (short) window of very high instability of the
+HT current, while a spark is a precise moment in time where the voltage tripped.
 """
 
 import pandas as pd

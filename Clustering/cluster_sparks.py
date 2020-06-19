@@ -1,3 +1,20 @@
+""" After the clustering was performed, all voltage breakdown points
+are still unclustered. We chose to assign all these points to the cluster that
+happened previously if they contained at least one spark. Suppose for example 
+that from minute 10-20 (of an arbitrary day/hour) the source was running stable in 
+cluster 1, from minute 20-30 unstable in cluster 3 and minute 30-31 was marked as a
+voltage breakdown with two sparks happening. Then we would assign this minute to
+cluster 3 with an unstable source. If during minutes 20-30 the source would have been stable, 
+we would assign minute 30-31 to cluster 3 of a stable source.
+
+This is purely a matter of definition which we chose because we wanted to see how various settings
+of the source lead to a different number of breakdowns.
+
+How to use it
+-------------
+The program needs two command line arguments: The input file and the output file.
+"""
+
 import numpy as np
 import pandas as pd
 

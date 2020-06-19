@@ -29,6 +29,7 @@
 # Clustering notebook
 !/Clustering/Optigrid_Clustering.ipynb
 !/Clustering/cluster_sparks.py
+!/Clustering/__init__.py
 
 # Allow the documentation directory
 !/docs/

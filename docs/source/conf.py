@@ -15,7 +15,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../ionsrcopt"))
-sys.path.insert(0, os.path.abspath("../../preparation"))
+sys.path.insert(0, os.path.abspath("../../Preparation"))
+sys.path.insert(0, os.path.abspath("../../Clustering"))
 
 
 # -- Project information -----------------------------------------------------

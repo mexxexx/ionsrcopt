@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Adding a new column to an existing file &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Clustering package" href="../clustering/overview.html" />
+    <link rel="prev" title="Preprocessing" href="preprocessing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ionsrcopt/overview.html">The ionsrcopt package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The Preparation package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data_loading.html">Downloading Data from CALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Adding a new column to an existing file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-to-a-preprocessed-file">Adding to a preprocessed file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-to-a-clustered-file">Adding to a clustered file</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../clustering/overview.html">The Clustering package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/overview.html">The visualization package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The Preparation package</a> &raquo;</li>
+        
+      <li>Adding a new column to an existing file</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/preparation/add_column.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-Preparation.add_column">
+<span id="adding-a-new-column-to-an-existing-file"></span><h1>Adding a new column to an existing file<a class="headerlink" href="#module-Preparation.add_column" title="Permalink to this headline">¶</a></h1>
+<p>Sometimes it may be necessary to add a column to your preprocessing
+or clustering files, for example if you downloaded a new parameter you are
+interested in. Then you maybe do not want to run the scripts again. In this case
+you can use the <code class="docutils literal notranslate"><span class="pre">add_column.py</span></code> script. It supports two different modes:
+Adding to a preprocessed file and adding to a clustered file. You have to
+uncomment the function call in <cite>main</cite> that you are interested in.</p>
+<div class="section" id="adding-to-a-preprocessed-file">
+<h2>Adding to a preprocessed file<a class="headerlink" href="#adding-to-a-preprocessed-file" title="Permalink to this headline">¶</a></h2>
+<p>In the case of preprocessed files, every month is still stored in a separate .csv
+file. You select the year and the start and end months, and the new column will be added
+to every month you selected. The <cite>new_column</cite> parameter controls the name of the column
+that will be added. The information is taken from the files in the <cite>input_folder</cite> and
+appended to the corresponding files in the <cite>output_folder</cite> (in this case, typically
+<cite>input_folder=”Data_Raw</cite> and <cite>output_folder=Data_Preprocessed</cite>). In the function
+<cite>add_column_to_preprocessing</cite> you can specify a suffix that will be appended to the input
+file name. <cite>&lt;month&gt;&lt;year&gt;.csv</cite> becomes <cite>&lt;month&gt;&lt;year&gt;&lt;suffix&gt;.csv</cite></p>
+</div>
+<div class="section" id="adding-to-a-clustered-file">
+<h2>Adding to a clustered file<a class="headerlink" href="#adding-to-a-clustered-file" title="Permalink to this headline">¶</a></h2>
+<p>For one year, all results of the cluster analysis are written into the same file. Inside
+the function you have to specify an input file (this will be the file you want to append to)
+and an output file (the appended version).</p>
+<dl class="py function">
+<dt id="Preparation.add_column.add_column">
+<code class="sig-prename descclassname">Preparation.add_column.</code><code class="sig-name descname">add_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">new_column</span></em>, <em class="sig-param"><span class="n">new_column_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Preparation.add_column.add_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the new column to the <cite>df</cite> DataFrame keeping the index of df as is
+and forward filling the data of <cite>new_column</cite>. Consecutive repeated values are
+replaced with <cite>np.nan</cite> and only the first occurrence is kept.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="Preparation.add_column.add_column_to_clustered">
+<code class="sig-prename descclassname">Preparation.add_column.</code><code class="sig-name descname">add_column_to_clustered</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">year</span></em>, <em class="sig-param"><span class="n">start_month</span></em>, <em class="sig-param"><span class="n">end_month</span></em>, <em class="sig-param"><span class="n">new_column_name</span></em>, <em class="sig-param"><span class="n">input_folder</span></em>, <em class="sig-param"><span class="n">output_folder</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Preparation.add_column.add_column_to_clustered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a column to a clustering file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="Preparation.add_column.add_column_to_preprocessing">
+<code class="sig-prename descclassname">Preparation.add_column.</code><code class="sig-name descname">add_column_to_preprocessing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">year</span></em>, <em class="sig-param"><span class="n">start_month</span></em>, <em class="sig-param"><span class="n">end_month</span></em>, <em class="sig-param"><span class="n">new_column_name</span></em>, <em class="sig-param"><span class="n">input_folder</span></em>, <em class="sig-param"><span class="n">output_folder</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Preparation.add_column.add_column_to_preprocessing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a column to a preprocessing file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="Preparation.add_column.load_existing_data">
+<code class="sig-prename descclassname">Preparation.add_column.</code><code class="sig-name descname">load_existing_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Preparation.add_column.load_existing_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a complete file and correctly localizes it to UTC.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="Preparation.add_column.load_new_column">
+<code class="sig-prename descclassname">Preparation.add_column.</code><code class="sig-name descname">load_new_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">year</span></em>, <em class="sig-param"><span class="n">start_month</span></em>, <em class="sig-param"><span class="n">end_month</span></em>, <em class="sig-param"><span class="n">new_column_name</span></em>, <em class="sig-param"><span class="n">data_folder</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Preparation.add_column.load_new_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given year loads the column <cite>new_column_name</cite> for all months between <cite>start_month</cite> and
+<cite>end_month</cite> (inclusive) as one long pandas series.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../clustering/overview.html" class="btn btn-neutral float-right" title="The Clustering package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="preprocessing.html" class="btn btn-neutral float-left" title="Preprocessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Optigrid &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Preparation package" href="../preparation/overview.html" />
+    <link rel="prev" title="HT Voltage Breakdowns" href="voltage_breakdowns.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The ionsrcopt package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_data.html">Data Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source_stability.html">Source Stability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="voltage_breakdowns.html">HT Voltage Breakdowns</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Optigrid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../preparation/overview.html">The Preparation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clustering/overview.html">The Clustering package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/overview.html">The visualization package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The ionsrcopt package</a> &raquo;</li>
+        
+      <li>Optigrid</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/ionsrcopt/optigrid.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-ionsrcopt.optigrid">
+<span id="optigrid"></span><h1>Optigrid<a class="headerlink" href="#module-ionsrcopt.optigrid" title="Permalink to this headline">¶</a></h1>
+<p>This is an implementation of the Optigrid Algorithm described in
+“Optimal Grid-Clustering: Towards Breaking the Curse of Dimensionality in High-Dimensional Clustering”
+by Hinneburg and Keim.</p>
+<p>The algorithm is a grid based clustering algorithm, that was developed to make
+clustering possible in high dimensional spaces. The input space is partitioned into a axis parallel
+grid by sequentially adding cutting planes that only intersect regions with a low (estimated)
+kernel density. The density in the high dimensional space is bounded from above by the kernel
+density of contracting projection onto the coordinate planes.</p>
+<p>Note that the implementation of Optigrid is not completely deterministic, so
+different runs can yield slightly different result. This is due to a kernel density
+estimation that is only done on a randomly selected sample. However, as the sample
+size is chosen very large (15000), the kernel density will be very similar, so the
+clusters should not be too different when running it a second time.</p>
+<dl class="py class">
+<dt id="ionsrcopt.optigrid.Optigrid">
+<em class="property">class </em><code class="sig-prename descclassname">ionsrcopt.optigrid.</code><code class="sig-name descname">Optigrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">q</span></em>, <em class="sig-param"><span class="n">max_cut_score</span></em>, <em class="sig-param"><span class="n">noise_level</span></em>, <em class="sig-param"><span class="n">kde_bandwidth</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kde_grid_ticks</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">kde_num_samples</span><span class="o">=</span><span class="default_value">15000</span></em>, <em class="sig-param"><span class="n">kde_atol</span><span class="o">=</span><span class="default_value">1e-06</span></em>, <em class="sig-param"><span class="n">kde_rtol</span><span class="o">=</span><span class="default_value">0.0001</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.optigrid.Optigrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of the Optigrid Algorithm described in “Optimal Grid-Clustering: Towards Breaking the Curse of Dimensionality in High-Dimensional Clustering” by Hinneburg and Keim</p>
+<dl class="py method">
+<dt id="ionsrcopt.optigrid.Optigrid.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">weights</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.optigrid.Optigrid.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all clusters in the data. Clusters are stored as indices pointing to the passed data, i.e. if ‘10’ is in cluster ‘0’ means, that data[10] is in cluster 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>ndarray</em>) – Each datapoint has to be an array of d dimensions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ionsrcopt.optigrid.Optigrid.score_samples">
+<code class="sig-name descname">score_samples</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">samples</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.optigrid.Optigrid.score_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>For every sample calculates the cluster it belongs to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>samples</strong> (<em>list of ndarray</em>) – The sample to score. They need to have the same dimensionality and scale as the data optigrid was fitted with</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>For every sample, the cluster it belongs to or None if it is in no cluster (only possible for q&gt;1)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-ionsrcopt.grid_level"></span><dl class="py class">
+<dt id="ionsrcopt.grid_level.GridLevel">
+<em class="property">class </em><code class="sig-prename descclassname">ionsrcopt.grid_level.</code><code class="sig-name descname">GridLevel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cutting_planes</span></em>, <em class="sig-param"><span class="n">cluster_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.grid_level.GridLevel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optigrid creates a nested partition of the input space. This data structure is used to represent a single level of the grid. Either it represents a cluster or it is devided further into subgrids</p>
+<dl class="py method">
+<dt id="ionsrcopt.grid_level.GridLevel.add_subgrid">
+<code class="sig-name descname">add_subgrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subgrid_index</span></em>, <em class="sig-param"><span class="n">subgrid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.grid_level.GridLevel.add_subgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a deeper level to the grid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subgrid_index</strong> (<em>int</em>) – For every cutting plane, the subgrid can lay either right or left. This information can be used to binary encode it all at once. This is the subgrid index</p></li>
+<li><p><strong>subgrid</strong> (<a class="reference internal" href="#ionsrcopt.grid_level.GridLevel" title="ionsrcopt.grid_level.GridLevel"><em>GridLevel</em></a>) – The subgrid to add</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ionsrcopt.grid_level.GridLevel.get_sublevel">
+<code class="sig-name descname">get_sublevel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datapoint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.grid_level.GridLevel.get_sublevel" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given datapoint returns the subgrid it lies in</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>datapoint</strong> (<em>ndarray</em>) – The datapoint</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The subgrid or -1 if it belongs to no subgrid, meaning the point is an outlier.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ionsrcopt.grid_level.GridLevel" title="ionsrcopt.grid_level.GridLevel">GridLevel</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../preparation/overview.html" class="btn btn-neutral float-right" title="The Preparation package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="voltage_breakdowns.html" class="btn btn-neutral float-left" title="HT Voltage Breakdowns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

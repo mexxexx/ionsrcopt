@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Visualizing a cluster &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extracting raw data" href="extract_raw_data.html" />
+    <link rel="prev" title="Describing the found clusters" href="cluster_description.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ionsrcopt/overview.html">The ionsrcopt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preparation/overview.html">The Preparation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clustering/overview.html">The Clustering package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The visualization package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cluster_description.html">Describing the found clusters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Visualizing a cluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-use-it">How to use it</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-line-arguments">Command line Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extract_raw_data.html">Extracting raw data</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The visualization package</a> &raquo;</li>
+        
+      <li>Visualizing a cluster</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/visualization/cluster_timeseries.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-visualization.cluster_timeseries">
+<span id="visualizing-a-cluster"></span><h1>Visualizing a cluster<a class="headerlink" href="#module-visualization.cluster_timeseries" title="Permalink to this headline">¶</a></h1>
+<p>With the <code class="docutils literal notranslate"><span class="pre">cluster_timeseries.py</span></code> script you can visualize a cluster as a time series. You
+can select to see the the HT voltage breakdowns or hide them. Furthermore,
+you can look at a whole stability period instead of only at a certain cluster.</p>
+<div class="section" id="how-to-use-it">
+<h2>How to use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h2>
+<p>Before you can run the script, you will probably need to set it up.</p>
+<p>In the main function edit the input files for the different years and if
+applicable add more years. The <cite>input_file</cite> has to be a .csv file as produced
+by the clustering notebook, in particular every row represents a data point,
+the first row have to be the column names, the first column the timestamps of
+each data point.</p>
+<p>Edit the <cite>features</cite> list to include all source features you are interested
+in seeing. Note that these features have to be columns in your input file.</p>
+</div>
+<div class="section" id="command-line-arguments">
+<h2>Command line Arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Once everything is configured properly you can run the script with
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">cluster_timeseries.py</span> <span class="pre">[-param][option]</span></code>. You can give it
+several command line parameters that are described also with the
+help flag (-h).</p>
+<p>-y: Here you can pass the year you are interested in, depending on what
+you have configured in the main method. (default 2018)</p>
+<p>-s: Pass a 1 to see the clusters of the stable periods and a 0 for the
+unstable ones. (default 1)</p>
+<p>-c: Pass the cluster id of the cluster you want to visualize. If you do not
+pass anything (None), then the whole stability period will be plotted.
+(default None)</p>
+<p>-b: Pass True if you want to display the voltage breakdowns and False
+otherwise. (default False)</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="extract_raw_data.html" class="btn btn-neutral float-right" title="Extracting raw data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cluster_description.html" class="btn btn-neutral float-left" title="Describing the found clusters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

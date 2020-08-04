@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Features &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Loading" href="load_data.html" />
+    <link rel="prev" title="The ionsrcopt package" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The ionsrcopt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sourcefeatures"><cite>SourceFeatures</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#processingfeatures"><cite>ProcessingFeatures</cite></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="load_data.html">Data Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source_stability.html">Source Stability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="voltage_breakdowns.html">HT Voltage Breakdowns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optigrid.html">Optigrid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../preparation/overview.html">The Preparation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clustering/overview.html">The Clustering package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/overview.html">The visualization package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The ionsrcopt package</a> &raquo;</li>
+        
+      <li>Features</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/ionsrcopt/features.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<p>All our data is stored in .csv files and in memory in pandas DataFrames.
+To make usage easier and to avoid hard coding strings, the package provides
+two classes, that provide python variables for feature names.</p>
+<p>On the one hand, there are features that are extracted from CALS. These can
+be found in the <cite>SourceFeatures</cite> class. On the other hand, some features
+are computed in the Processing or Clustering steps. They can be found in
+the <cite>PrecessingFeatures</cite> class.</p>
+<div class="section" id="sourcefeatures">
+<h2><cite>SourceFeatures</cite><a class="headerlink" href="#sourcefeatures" title="Permalink to this headline">¶</a></h2>
+<p>This class provides the following variables.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable name</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>TIMESTAMP</p></td>
+<td><p>UTC_TIME</p></td>
+</tr>
+<tr class="row-odd"><td><p>BIASDISCAQNV</p></td>
+<td><p>IP.NSRCGEN:BIASDISCAQNV</p></td>
+</tr>
+<tr class="row-even"><td><p>GASAQN</p></td>
+<td><p>IP.NSRCGEN:GASAQN</p></td>
+</tr>
+<tr class="row-odd"><td><p>GASSASAQN</p></td>
+<td><p>IP.NSRCGEN:GASSASAQN</p></td>
+</tr>
+<tr class="row-even"><td><p>SOLINJ_CURRENT</p></td>
+<td><p>IP.SOLINJ.ACQUISITION:CURRENT</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOLCEN_CURRENT</p></td>
+<td><p>IP.SOLCEN.ACQUISITION:CURRENT</p></td>
+</tr>
+<tr class="row-even"><td><p>SOLEXT_CURRENT</p></td>
+<td><p>IP.SOLEXT.ACQUISITION:CURRENT</p></td>
+</tr>
+<tr class="row-odd"><td><p>OVEN1AQNP</p></td>
+<td><p>IP.NSRCGEN:OVEN1AQNP</p></td>
+</tr>
+<tr class="row-even"><td><p>OVEN2AQNP</p></td>
+<td><p>IP.NSRCGEN:OVEN2AQNP</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOURCEHTAQNI</p></td>
+<td><p>IP.NSRCGEN:SOURCEHTAQNI</p></td>
+</tr>
+<tr class="row-even"><td><p>SOURCEHTAQNV</p></td>
+<td><p>IP.NSRCGEN:SOURCEHTAQNV</p></td>
+</tr>
+<tr class="row-odd"><td><p>SAIREM2_FORWARDPOWER</p></td>
+<td><p>IP.SAIREM2:FORWARDPOWER</p></td>
+</tr>
+<tr class="row-even"><td><p>THOMSON_FORWARDPOWER</p></td>
+<td><p>IP.NSRCGEN:RFTHOMSONAQNFWD</p></td>
+</tr>
+<tr class="row-odd"><td><p>SPARK_COUNTER</p></td>
+<td><p>IP.NSRCGEN:SPARKS</p></td>
+</tr>
+<tr class="row-even"><td><p>BCT05_CURRENT</p></td>
+<td><p>ITL.BCT05:CURRENT</p></td>
+</tr>
+<tr class="row-odd"><td><p>BCT25_CURRENT</p></td>
+<td><p>ITF.BCT25:CURRENT</p></td>
+</tr>
+<tr class="row-even"><td><p>BCT41_CURRENT</p></td>
+<td><p>ITH.BCT41:CURRENT</p></td>
+</tr>
+</tbody>
+</table>
+<p>The String value is the parameter name in CALS and also the used column name in
+output files and Data Frames.</p>
+</div>
+<div class="section" id="processingfeatures">
+<h2><cite>ProcessingFeatures</cite><a class="headerlink" href="#processingfeatures" title="Permalink to this headline">¶</a></h2>
+<p>This class provides the following variables.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 20%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable name</p></th>
+<th class="head"><p>String</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SOURCE_RUNNING</p></td>
+<td><p>source_running</p></td>
+<td><p>A <cite>1</cite> if the source is running (BCT05 &gt; 0), 0 otherwise</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOURCE_STABILITY</p></td>
+<td><p>source_stable</p></td>
+<td><p>A <cite>1</cite> if the source is considered stable, 0 otherwise</p></td>
+</tr>
+<tr class="row-even"><td><p>CLUSTER</p></td>
+<td><p>optigrid_cluster</p></td>
+<td><p>The number of the cluster tha data point belongs to</p></td>
+</tr>
+<tr class="row-odd"><td><p>HT_VOLTAGE_BREAKDOWN</p></td>
+<td><p>ht_voltage_breakdown</p></td>
+<td><p>0 if the Point does not belong to a voltae breakdown,
+otherwise the UNIX timestamp of the beginning of the breakdown.</p></td>
+</tr>
+<tr class="row-even"><td><p>HT_SPARKS_COUNTER</p></td>
+<td><p>ht_sparks_counter</p></td>
+<td><p>A counter that increases by one for every spark that was detected</p></td>
+</tr>
+<tr class="row-odd"><td><p>DATAPOINT_DURATION</p></td>
+<td><p>datapoint_duration</p></td>
+<td><p>The difference between the timestamp of this and the
+next data point in second</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="load_data.html" class="btn btn-neutral float-right" title="Data Loading" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="overview.html" class="btn btn-neutral float-left" title="The ionsrcopt package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

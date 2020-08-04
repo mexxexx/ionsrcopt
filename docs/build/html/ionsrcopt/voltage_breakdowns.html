@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>HT Voltage Breakdowns &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Optigrid" href="optigrid.html" />
+    <link rel="prev" title="Source Stability" href="source_stability.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The ionsrcopt package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_data.html">Data Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source_stability.html">Source Stability</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">HT Voltage Breakdowns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optigrid.html">Optigrid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../preparation/overview.html">The Preparation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clustering/overview.html">The Clustering package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/overview.html">The visualization package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The ionsrcopt package</a> &raquo;</li>
+        
+      <li>HT Voltage Breakdowns</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/ionsrcopt/voltage_breakdowns.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-ionsrcopt.voltage_breakdowns">
+<span id="ht-voltage-breakdowns"></span><h1>HT Voltage Breakdowns<a class="headerlink" href="#module-ionsrcopt.voltage_breakdowns" title="Permalink to this headline">¶</a></h1>
+<p>Sometimes, the high voltage of the source can break down.
+This disturbs the beam and should be avoided. Hence we wrote
+this module to count how often it happens. Furthermore, as during
+these breakdowns the HT current makes a spark, we want to exclude
+data points that belong to a breakdown from the analysis, to not
+induce noise into the results.</p>
+<p>During a spark the following happens: First, the voltage breaks down,
+from around 20000V during operation to &lt;1000V. This can also be seen in
+the HT current, that typically rapidly drops to zero A, shoots up to three A,
+and then normalizes again. Shortly after this is registered by the system,
+the extraction solenoid current is ramped down to around 850A.</p>
+<p>This module provides two tools:</p>
+<p>1. The first one, <cite>detect_breakdowns</cite> finds
+periods where the HT current variance exceeds a threshold in a short window.
+Typically, the current has a low variance, and hence the sparks above can be
+found reliably with this method. It marks the whole window as a breakdown,
+so that all these data points can be ignored in the future analysis.</p>
+<p>2. The second one, <cite>detect_sparks</cite>, detects where exactly the the voltage
+broke down. If two breakdowns happened shortly after each other, method 1
+would count only one breakdown, but we are interested in the exact number.
+This methods counts the local minima of the HT voltage that are below a
+certain threshold.</p>
+<p>It is important to understand the difference between sparks and breakdowns. For
+this library a breakdown always marks a (short) window of very high instability of the
+HT current, while a spark is a precise moment in time where the voltage tripped.</p>
+<dl class="py function">
+<dt id="ionsrcopt.voltage_breakdowns.classify_using_var_threshold">
+<code class="sig-prename descclassname">ionsrcopt.voltage_breakdowns.</code><code class="sig-name descname">classify_using_var_threshold</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">threshold</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.voltage_breakdowns.classify_using_var_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classify values based on the variance exceeding a certain threshold</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ionsrcopt.voltage_breakdowns.detect_breakdowns">
+<code class="sig-prename descclassname">ionsrcopt.voltage_breakdowns.</code><code class="sig-name descname">detect_breakdowns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">ht_current_column</span></em>, <em class="sig-param"><span class="n">window_size</span><span class="o">=</span><span class="default_value">40</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.voltage_breakdowns.detect_breakdowns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detection of high voltage breakdown based on standard deviation exceding a certain threshold that has to be determined by experiments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – The frame containing the data</p></li>
+<li><p><strong>column</strong> (<em>string</em>) – High voltage current, typically this should be ‘IP.NSRCGEN:SOURCEHTAQNI’</p></li>
+<li><p><strong>window_size</strong> (<em>int</em>) – Size of the rolling window. Once a breakdown is detected, every value in this window will be set to 1.</p></li>
+<li><p><strong>threshold</strong> (<em>double</em>) – Threshold for the standard deviation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>For each data point that lies inside of a breakdown window, this array contains the timestamp of the start of the window,
+otherwise it is zero. So for each value greater that zero, all data points with the same value were in the same breakdown window.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ionsrcopt.voltage_breakdowns.detect_sparks">
+<code class="sig-prename descclassname">ionsrcopt.voltage_breakdowns.</code><code class="sig-name descname">detect_sparks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ht_voltage</span></em>, <em class="sig-param"><span class="n">breakdowns</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">1000</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.voltage_breakdowns.detect_sparks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect all sparks, i.e. the number of downward peaks of the HT voltage below a certain threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>np.array</strong><strong>)</strong> (<em>breakdowns</em>) – </p></li>
+<li><p><strong>(</strong><strong>np.array</strong><strong>)</strong> – Only peaks in these windows are counted as sparks.</p></li>
+<li><p><strong>(</strong><strong>float</strong><strong>)</strong> (<em>threshold</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>np.array</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>At each point where a spark occurred its timestamp, otherwise zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="optigrid.html" class="btn btn-neutral float-right" title="Optigrid" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="source_stability.html" class="btn btn-neutral float-left" title="Source Stability" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

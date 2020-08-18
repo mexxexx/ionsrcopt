@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Optigrid Clustering &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Cluster Sparks" href="cluster_sparks.html" />
+    <link rel="prev" title="The Clustering package" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ionsrcopt/overview.html">The ionsrcopt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preparation/overview.html">The Preparation package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The Clustering package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Optigrid Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster_sparks.html">Cluster Sparks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/overview.html">The visualization package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The Clustering package</a> &raquo;</li>
+        
+      <li>Optigrid Clustering</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/clustering/optigrid_clustering.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="optigrid-clustering">
+<h1>Optigrid Clustering<a class="headerlink" href="#optigrid-clustering" title="Permalink to this headline">¶</a></h1>
+<p>Once everything is prepared and preprocessed, it is time to find the clusters.</p>
+<p>Note that the implementation of Optigrid is not completely deterministic, so
+different runs can yield slightly different result. This is due to a kernel density
+estimation that is only done on a randomly selected sample. However, as the sample
+size is chosen very large (15000), the kernel density will be very similar, so the
+clusters should not be too different when running it a second time.</p>
+<p>First, you need to specify all columns you are interested in. There are three types:
+Parameters, these are the ones that will be clustered later on, Measurements, these will
+be added to the output file but don’t affect the clustering and columns from preprocessing.</p>
+<p>Second, you have to specify the important file. In the input_files list add all files
+of the month you want to cluster. They will be all clustered together, so specifying
+<cite>input_file=[“Sep2016.csv”, “Oct2016.csv”, “Nov2016.csv”]</cite> will result in clusters that span
+over these three months.</p>
+<p>Third, we select the values specified in <cite>parameters</cite> and use the column <cite>ProcessingFeatures.DATAPOINT_DURATION</cite>
+as weights. We scale the data using a <cite>(10, 90)</cite> quantile Robust scaler, to not be influenced too
+much by outliers but to also guarantee that the data dimensions are more or less on the same scale.</p>
+<p>After this, we have to select the parameters for the optigrid algorithm. Every iteration we use only one
+cutting plane (<cite>q=1</cite>). The <cite>max_cut_score=0.04</cite> and <cite>noise_level=0.05</cite> indicate when a group
+of points is considered as noise. In every step, Optigrid performs a density estimation for every
+dimension in the current subgrid. By definition, the integral under this function is one, so it is multiplied
+with the percentage of points in the current subgrid. A <cite>max_cut_score</cite> of <cite>0.04</cite> then says that
+if a local minimum of this adjusted kernel density has a value below <cite>0.04</cite>, a cut can be performed there.
+This is not equivalent to saying that at a cluster contains at least 4% of all points, as this would involve
+integrating the kernel density function. Therefore this value of <cite>0.04</cite> cannot be directly translated into
+something visual and was found by tweaking. If you feel that your resulting clusters separate points either too much
+or not enough, you should try to change these parameters. Another parameter is the <cite>kde_bandwidth</cite> parameter,
+that controls the bandwidth of the kernels in the density estimation. Depending on how exact the cluster should be,
+meaning how much variation you want to allow, you can change them for each parameter individually.</p>
+<p>The notebook then does two independent cluster runs. Once for the stable source and once for the unstable source.
+This is why, to tell to which cluster a point belongs, the source stability always is also a needed information.
+For example, each run creates a cluster with the index zero. However, points in the cluster 0 with a stable source
+obviously are different from the ones with cluster zero and an unstable source. For the cluster analysis, all
+HT voltage breakdown points are ignored. They are then assigned to a cluster using the <cite>cluster_sparks.py</cite> script
+described on the next page.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cluster_sparks.html" class="btn btn-neutral float-right" title="Cluster Sparks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="overview.html" class="btn btn-neutral float-left" title="The Clustering package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Describing the found clusters &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualizing a cluster" href="cluster_timeseries.html" />
+    <link rel="prev" title="The visualization package" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ionsrcopt/overview.html">The ionsrcopt package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preparation/overview.html">The Preparation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clustering/overview.html">The Clustering package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The visualization package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Describing the found clusters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-use-it">How to use it</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-line-arguments">Command line Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cluster_timeseries.html">Visualizing a cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extract_raw_data.html">Extracting raw data</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The visualization package</a> &raquo;</li>
+        
+      <li>Describing the found clusters</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/visualization/cluster_description.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-visualization.cluster_description">
+<span id="describing-the-found-clusters"></span><h1>Describing the found clusters<a class="headerlink" href="#module-visualization.cluster_description" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">cluster_description.py</span></code> script creates the summaries for the clusters, i.e. you
+can use it do display median, standard deviation, and other
+statistical properties, as well as further information such as oven
+refills, breakdown rate and duration.</p>
+<p>The result are sorted in descending order based on the total duration.</p>
+<div class="section" id="how-to-use-it">
+<h2>How to use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h2>
+<p>Before you use the script for the first time, you probably have
+to configure it.</p>
+<p>In the main function edit the input files for the different years and if
+applicable add more years. The <cite>input_file</cite> has to be a .csv file as produced
+by the clustering notebook, in particular every row represents a data point,
+the first row have to be the column names, the first column the timestamps of
+each data point.</p>
+<p>Edit the <cite>features</cite> list to include all source features you are interested
+in seeing. Note that these features have to be columns in your input file.</p>
+<p>Then, configure the statistics you are interested in by adding them to
+the <cite>statistics</cite> list. Available are</p>
+<ul class="simple">
+<li><p>mean</p></li>
+<li><p>median</p></li>
+<li><p>std (standard deviation)</p></li>
+<li><p>std% (standard deviation in percent of the mean)</p></li>
+<li><p>avg_dev (average deviation of mean, i.e. sum_i bs{x_i - mean})</p></li>
+<li><p>min (minimum value)</p></li>
+<li><p>25% (lower quartile)</p></li>
+<li><p>75% (upper quartile)</p></li>
+<li><p>max (maximum value)</p></li>
+</ul>
+</div>
+<div class="section" id="command-line-arguments">
+<h2>Command line Arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Once everything is configured properly you can run the script with
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">cluster_description.py</span> <span class="pre">[-param][option]</span></code>. You can give it
+several command line parameters that are described also with the
+help flag (-h).</p>
+<p>-y: Here you can pass the year you are interested in, depending on what
+you have configured in the main method. (default 2018)</p>
+<p>-s: Pass a 1 to see the clusters of the stable periods and a 0 for the
+unstable ones. (default 1)</p>
+<p>-f: Pass a y if you want to save the results to a file, otherwise (passing n)
+they will be printed to the console. (default n)</p>
+<p>-b: Pass a y if you want to know the breakdown rate per hour, otherwise n.
+(default n)</p>
+<p>-v: The number of clusters to visualize. (default 20)</p>
+<dl class="py function">
+<dt id="visualization.cluster_description.calculate_oven_refill_ends">
+<code class="sig-prename descclassname">visualization.cluster_description.</code><code class="sig-name descname">calculate_oven_refill_ends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oven1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visualization.cluster_description.calculate_oven_refill_ends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates possible time spans that mark an oven refill.</p>
+<p>These are periods where the <em>IP.NSRCGEN:OVEN1AQNP</em> was below 0.1W (off)
+for at least 45min continuously.</p>
+<p>TODO: As the results have to be compared with the real data anyways, it
+might be better to manually enter the refill ends instead of calculating candidates,
+as there are not many for one year (20-30).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oven1</strong> (<em>Series</em>) – Series with <em>IP.NSRCGEN:OVEN1AQNP</em> values</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>End</em>-points of the periods that could have been oven refills.
+This list might contain false positives, so a manual comparison
+with the data from CALS has to be done.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of timestamps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="visualization.cluster_description.clear_refills_2016">
+<code class="sig-prename descclassname">visualization.cluster_description.</code><code class="sig-name descname">clear_refills_2016</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oven_refill_ends</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visualization.cluster_description.clear_refills_2016" title="Permalink to this definition">¶</a></dt>
+<dd><p>Some of the automatically found refills in 2016 are incorrect and
+result e.g. from short oven stops. They are cleared out with this
+function based on manual selection and comparison with CALS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oven_refill_ends</strong> (<em>list of timestamps</em>) – The automatically detected _ends_ of the refill periods (time when the
+oven was ramped up again)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>End</em>-points of the periods that were real refills in 2016</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of timestamps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="visualization.cluster_description.clear_refills_2018">
+<code class="sig-prename descclassname">visualization.cluster_description.</code><code class="sig-name descname">clear_refills_2018</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oven_refill_ends</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visualization.cluster_description.clear_refills_2018" title="Permalink to this definition">¶</a></dt>
+<dd><p>Some of the automatically found refills in 2018 are incorrect and
+result e.g. from short oven stops. They are cleared out with this
+function based on manual selection and comparison with CALS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oven_refill_ends</strong> (<em>list of timestamps</em>) – The automatically detected _ends_ of the refill periods (time when the
+oven was ramped up again)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>End</em>-points of the periods that were real refills in 2018</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of timestamps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="visualization.cluster_description.describe_cluster">
+<code class="sig-prename descclassname">visualization.cluster_description.</code><code class="sig-name descname">describe_cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_df</span></em>, <em class="sig-param"><span class="n">features</span></em>, <em class="sig-param"><span class="n">weight_column</span></em>, <em class="sig-param"><span class="n">oven_refills</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visualization.cluster_description.describe_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the statistics for a cluster. Datapoints that are part of a breakdown
+period are excluded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_df</strong> (<em>DataFrame</em>) – A dataframe that contains all points of the cluster you want to describe.</p></li>
+<li><p><strong>features</strong> (<em>list of source features</em>) – All source feature for which the statistics should be generated</p></li>
+<li><p><strong>weight_column</strong> (<em>string</em>) – Name of the column to use for weighting data points, typically
+<cite>datapoint_duration</cite> (<code class="docutils literal notranslate"><span class="pre">ProcessingFeatures.DATAPOINT_DURATION</span></code>)</p></li>
+<li><p><strong>oven_refills</strong> (<em>list of timestamp</em>) – End of the oven refill periods</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A Series of the following statistics</p>
+<p>For each parameter in <cite>features</cite>:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>mean</p></li>
+<li><p>std</p></li>
+<li><p>std% (std in percent of mean)</p></li>
+<li><p>avg_dev (average deviation of mean)</p></li>
+<li><p>min</p></li>
+<li><p>25% (lower quartile)</p></li>
+<li><p>median</p></li>
+<li><p>75% (upper quartile)</p></li>
+<li><p>max</p></li>
+</ol>
+</div></blockquote>
+<p>Once for the cluster:</p>
+<blockquote>
+<div><ol class="arabic simple" start="10">
+<li><p>Density/count (number of data points in the cluster)</p></li>
+<li><p>Duration/in_hours (total duration of cluster)</p></li>
+<li><p>Duration/longest (duration of longest fragment)</p></li>
+<li><p>Duration/num_splits (number of fragments)</p></li>
+<li><p>Refill/index (index of oven refill that came directly before
+the beginning of the longest fragment)</p></li>
+<li><p>Refill/delta_in_hours (delta from the end of the closest oven refill)</p></li>
+<li><p>num_breakdowns/per_hour (number of breakdowns per hour)</p></li>
+</ol>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="visualization.cluster_description.get_cluster_duration">
+<code class="sig-prename descclassname">visualization.cluster_description.</code><code class="sig-name descname">get_cluster_duration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cluster_df</span></em>, <em class="sig-param"><span class="n">weight_column</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visualization.cluster_description.get_cluster_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the duration of the longest fragment of a cluster.
+Between two fragments there has to be a break of at least one hour,
+otherwise they are merged together.</p>
+<dl class="simple">
+<dt>cluster_df<span class="classifier">DataFrame</span></dt><dd><p>A dataframe that contains all points of the cluster.</p>
+</dd>
+<dt>weight_column<span class="classifier">string</span></dt><dd><p>Name of the column to use for weighting data points, typically
+<cite>datapoint_duration</cite> (<code class="docutils literal notranslate"><span class="pre">ProcessingFeatures.DATAPOINT_DURATION</span></code>)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>duration_longest_start</strong> (<em>timestamp</em>) – Starting time of the longest fragment</p></li>
+<li><p><strong>duration_longest</strong> (<em>double</em>) – Duration of the longest fragment in seconds</p></li>
+<li><p><strong>duration_num_splits</strong> (<em>int</em>) – Total number of fragments</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="visualization.cluster_description.get_wanted_statistics">
+<code class="sig-prename descclassname">visualization.cluster_description.</code><code class="sig-name descname">get_wanted_statistics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">features</span></em>, <em class="sig-param"><span class="n">statistics</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visualization.cluster_description.get_wanted_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the wanted statistics from the whole description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<em>list of source features</em>) – All source feature which you are interested in</p></li>
+<li><p><strong>statistics</strong> (<em>list of string</em>) – The statistics you want to select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuples in the form (feature, statistic) for all statistics and parameters
+passed as arguments</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="visualization.cluster_description.round_described">
+<code class="sig-prename descclassname">visualization.cluster_description.</code><code class="sig-name descname">round_described</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">described</span></em>, <em class="sig-param"><span class="n">decimals</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visualization.cluster_description.round_described" title="Permalink to this definition">¶</a></dt>
+<dd><p>For printing purposes the results should be rounded.
+This is done with this function and the desired number of
+decimals are passed per parameter as an argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>described</strong> (<em>DataFrame</em>) – The DataFrame you want to print</p></li>
+<li><p><strong>decimals</strong> (<em>dict</em>) – Keys are parameters (columns of the described DF) and values
+are the number of decimal places you want to see.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Rounded version of <code class="docutils literal notranslate"><span class="pre">described</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cluster_timeseries.html" class="btn btn-neutral float-right" title="Visualizing a cluster" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="overview.html" class="btn btn-neutral float-left" title="The visualization package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

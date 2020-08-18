@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Downloading Data from CALS &mdash; ionsrcopt 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Preprocessing" href="preprocessing.html" />
+    <link rel="prev" title="The Preparation package" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ionsrcopt
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html#setup">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ionsrcopt/overview.html">The ionsrcopt package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="overview.html">The Preparation package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Downloading Data from CALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_voltage_breakdowns.html">Computing breakdowns of the HT voltage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="add_column.html">Adding a new column to an existing file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../clustering/overview.html">The Clustering package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/overview.html">The visualization package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ionsrcopt</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="overview.html">The Preparation package</a> &raquo;</li>
+        
+      <li>Downloading Data from CALS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/preparation/data_loading.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="downloading-data-from-cals">
+<h1>Downloading Data from CALS<a class="headerlink" href="#downloading-data-from-cals" title="Permalink to this headline">¶</a></h1>
+<p>The entry point of the analysis is to download the data from
+CALS. It is possible to do this manually using Timber, but as
+this is cumbersome, you can use the <code class="docutils literal notranslate"><span class="pre">Data_Loading.ipynb</span></code>
+notebook that uses <cite>pyTimber</cite> (see <a class="reference external" href="https://github.com/rdemaria/pytimber">https://github.com/rdemaria/pytimber</a>). Note however, that you need to
+be on the CERN technical network for this. The recommended approach is
+to upload this notebook to <code class="docutils literal notranslate"><span class="pre">SWAN</span></code> (see <a class="reference external" href="https://swan.web.cern.ch/">here</a>),
+because pyTimber can be used there.</p>
+<p>Before you can use the notebook, you have to configure it. For this
+the two last cells are important.</p>
+<p>In the second to last cell you have to specify which parameters you want
+to download. You can either load them as they are in the database (by adding
+them to the <code class="docutils literal notranslate"><span class="pre">parameters_raw</span></code> list), or transformed (<code class="docutils literal notranslate"><span class="pre">parameters_scaled</span></code>). For the
+transformations you need to add them in the form <code class="docutils literal notranslate"><span class="pre">parameter:dict</span></code>, where <code class="docutils literal notranslate"><span class="pre">dict</span></code> is a
+dictionary with the following entries:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scale</span></code>: The way you want to transform the data, e.g. average it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interval</span></code>: The time interval to use, e.g. seconds, minutes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: How long the interval should be, e.g. 10. (this has to be an integer)</p></li>
+</ul>
+<p>Please see the pyTimber documentation for a list of available options.</p>
+<p>Afterwards, you can configure what time span to download. In the last cell you can set the year,
+the start and the end month. The script always downloads data in monthly batches. There are two more
+options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">replace_file</span></code>: If you set this to <code class="docutils literal notranslate"><span class="pre">True</span></code>, then any existing file for the same month (<code class="docutils literal notranslate"><span class="pre">&lt;month&gt;&lt;year&gt;.csv</span></code>) will be overwritten.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">replace_column</span></code>: If you don’t replace an existing file, then new columns will be appended to it. This setting regulates what happens with already existing columns that were downloaded again. If it is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, then they will be overwritten, otherwise the original will be kept and newly downloaded data discarded.</p></li>
+</ul>
+<p>Once configuration is finished, run the whole notebook. Data will be saved in the
+<code class="docutils literal notranslate"><span class="pre">output_folder</span></code>, and each month will be a separate .csv file with the name <code class="docutils literal notranslate"><span class="pre">&lt;month&gt;&lt;year&gt;.csv</span></code>.
+The column names will be the same as specified in the parameter lists.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="preprocessing.html" class="btn btn-neutral float-right" title="Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="overview.html" class="btn btn-neutral float-left" title="The Preparation package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Max Mihailescu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

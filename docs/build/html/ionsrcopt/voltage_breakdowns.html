@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Optigrid" href="optigrid.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> ionsrcopt
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ionsrcopt
           
 
           
@@ -73,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -101,6 +103,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -139,7 +142,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="overview.html">The ionsrcopt package</a> &raquo;</li>
         
@@ -166,7 +169,7 @@
 <span id="ht-voltage-breakdowns"></span><h1>HT Voltage Breakdowns<a class="headerlink" href="#module-ionsrcopt.voltage_breakdowns" title="Permalink to this headline">¶</a></h1>
 <p>Sometimes, the high voltage of the source can break down.
 This disturbs the beam and should be avoided. Hence we wrote
-this module to count how often it happens. Furthermore, as during
+the <cite>voltage_breakdowns.py</cite> module to count how often it happens. Furthermore, as during
 these breakdowns the HT current makes a spark, we want to exclude
 data points that belong to a breakdown from the analysis, to not
 induce noise into the results.</p>
@@ -175,7 +178,7 @@ from around 20000V during operation to &lt;1000V. This can also be seen in
 the HT current, that typically rapidly drops to zero A, shoots up to three A,
 and then normalizes again. Shortly after this is registered by the system,
 the extraction solenoid current is ramped down to around 850A.</p>
-<p>This module provides two tools:</p>
+<p>The <cite>voltage_breakdowns.py</cite> module provides two tools:</p>
 <p>1. The first one, <cite>detect_breakdowns</cite> finds
 periods where the HT current variance exceeds a threshold in a short window.
 Typically, the current has a low variance, and hence the sparks above can be
@@ -193,6 +196,20 @@ HT current, while a spark is a precise moment in time where the voltage tripped.
 <dt id="ionsrcopt.voltage_breakdowns.classify_using_var_threshold">
 <code class="sig-prename descclassname">ionsrcopt.voltage_breakdowns.</code><code class="sig-name descname">classify_using_var_threshold</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">threshold</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ionsrcopt.voltage_breakdowns.classify_using_var_threshold" title="Permalink to this definition">¶</a></dt>
 <dd><p>Classify values based on the variance exceeding a certain threshold</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>np.ndarray</em>) – Values for which the variance is to be computed.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – Threshold agains which to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><cite>1</cite> if the variance is greater or equal than the threshold, <cite>0</cite> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -234,7 +251,7 @@ otherwise it is zero. So for each value greater that zero, all data points with 
 <dd class="field-even"><p><strong>np.array</strong></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>At each point where a spark occurred its timestamp, otherwise zero.</p>
+<dd class="field-odd"><p>At each point where a spark occurred the sparks timestamp, otherwise zero.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -261,11 +278,19 @@ otherwise it is zero. So for each value greater that zero, all data points with 
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Max Mihailescu
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -276,7 +301,6 @@ otherwise it is zero. So for each value greater that zero, all data points with 
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

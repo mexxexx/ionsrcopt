@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Preprocessing" href="preprocessing.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> ionsrcopt
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ionsrcopt
           
 
           
@@ -73,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="overview.html">The Preparation package</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Downloading Data from CALS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compute_voltage_breakdowns.html">Computing breakdowns of the HT voltage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="add_column.html">Adding a new column to an existing file</a></li>
 </ul>
 </li>
@@ -100,6 +101,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -138,7 +140,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="overview.html">The Preparation package</a> &raquo;</li>
         
@@ -162,7 +164,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="downloading-data-from-cals">
-<h1>Downloading Data from CALS<a class="headerlink" href="#downloading-data-from-cals" title="Permalink to this headline">¶</a></h1>
+<span id="data-loading"></span><h1>Downloading Data from CALS<a class="headerlink" href="#downloading-data-from-cals" title="Permalink to this headline">¶</a></h1>
 <p>The entry point of the analysis is to download the data from
 CALS. It is possible to do this manually using Timber, but as
 this is cumbersome, you can use the <code class="docutils literal notranslate"><span class="pre">Data_Loading.ipynb</span></code>
@@ -215,11 +217,19 @@ The column names will be the same as specified in the parameter lists.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Max Mihailescu
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -230,7 +240,6 @@ The column names will be the same as specified in the parameter lists.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

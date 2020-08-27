@@ -1,6 +1,6 @@
 """ Sometimes, the high voltage of the source can break down.
 This disturbs the beam and should be avoided. Hence we wrote
-this module to count how often it happens. Furthermore, as during
+the `voltage_breakdowns.py` module to count how often it happens. Furthermore, as during
 these breakdowns the HT current makes a spark, we want to exclude
 data points that belong to a breakdown from the analysis, to not
 induce noise into the results.
@@ -11,7 +11,7 @@ the HT current, that typically rapidly drops to zero A, shoots up to three A,
 and then normalizes again. Shortly after this is registered by the system,
 the extraction solenoid current is ramped down to around 850A.
 
-This module provides two tools: 
+The `voltage_breakdowns.py` module provides two tools: 
 
 1. The first one, `detect_breakdowns` finds
 periods where the HT current variance exceeds a threshold in a short window.
@@ -37,7 +37,15 @@ from scipy import signal
 
 
 def classify_using_var_threshold(values, threshold):
-    """ Classify values based on the variance exceeding a certain threshold """
+    """ Classify values based on the variance exceeding a certain threshold 
+    
+    Parameters:
+        values (np.ndarray): Values for which the variance is to be computed.
+        threshold (float): Threshold agains which to check.
+
+    Returns:
+        int: `1` if the variance is greater or equal than the threshold, `0` otherwise.
+    """
 
     var = np.var(values)
     return int(var >= threshold)
@@ -90,7 +98,7 @@ def detect_sparks(ht_voltage, breakdowns, threshold=1000):
 
     Returns
     -------
-        np.array: At each point where a spark occurred its timestamp, otherwise zero.
+        np.array: At each point where a spark occurred the sparks timestamp, otherwise zero.
     """
 
     ht_voltage = ht_voltage.copy()

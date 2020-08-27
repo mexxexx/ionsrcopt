@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Adding a new column to an existing file" href="add_column.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> ionsrcopt
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> ionsrcopt
           
 
           
@@ -73,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -105,6 +107,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -143,7 +146,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="overview.html">The Preparation package</a> &raquo;</li>
         
@@ -167,7 +170,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="preprocessing">
-<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h1>
 <p>Next, we need to do some preprocessing using the <cite>Preprocessing.ipynb</cite> notebook. The notebook will do the following things:</p>
 <ol class="arabic simple">
 <li><p>Compute the duration of each data point</p></li>
@@ -178,7 +181,7 @@
 <div class="section" id="computing-the-duration-of-individual-points">
 <h2>1. Computing the duration of individual points<a class="headerlink" href="#computing-the-duration-of-individual-points" title="Permalink to this headline">¶</a></h2>
 <p>The data is stored only when something changes, hence it might be that between two consecutive points a different amount of time passes.
-We want to consider this in our cluster analysis, and we do this by weighting each individual point by the number of settings it remained
+We want to consider this in our cluster analysis, and we do this by weighting each individual point by the number of seconds it remained
 unchanged. This is what we call the duration of a data point.</p>
 </div>
 <div class="section" id="computing-the-stability">
@@ -191,7 +194,8 @@ to match the interpretation of source experts.</p>
 <div class="section" id="detecting-breakdowns">
 <h2>3. Detecting breakdowns<a class="headerlink" href="#detecting-breakdowns" title="Permalink to this headline">¶</a></h2>
 <p>Furthermore, we need to exclude points that happened around voltage breakdowns, as there the HT current is unstable and might introduce noise into
-our analysis. Here, sparks should be detected too, but this is currently done in <cite>detect_breakdowns.py</cite> (TODO: add spark detection code to notebook).</p>
+our analysis. Furthermore, we detect the spark that are happening (This feature was not tested in the notebook, I advise making a sanity check!!).
+The breakdown and spark detection can be also made using the <cite>compute_voltage_breaakdowns.py</cite> script.</p>
 </div>
 <div class="section" id="check-if-the-source-was-running">
 <h2>4. Check if the source was running<a class="headerlink" href="#check-if-the-source-was-running" title="Permalink to this headline">¶</a></h2>
@@ -219,11 +223,19 @@ our analysis. Here, sparks should be detected too, but this is currently done in
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Max Mihailescu
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -234,7 +246,6 @@ our analysis. Here, sparks should be detected too, but this is currently done in
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

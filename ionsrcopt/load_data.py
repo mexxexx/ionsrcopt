@@ -106,6 +106,7 @@ def add_previous_data(df, previous_data, fill_nan_with_zeros):
     Parameters:
         df (DataFrame): The data frame with the data from the current time interval
         previous_data (None or String or DataFrame): The data from the previous interval. If None, then this method does nothing. If it is a file, it loads the data from the file. If it is a data frame, the dataa is taken directly from there.
+        fill_nan_with_zeros (bool): True, if you want to prepend a row full of zeros, to have zeros where forwardfilling is not possible.
 
     Returns:
         Timestamp

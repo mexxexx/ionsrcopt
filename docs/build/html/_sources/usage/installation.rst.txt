@@ -37,4 +37,4 @@ We will need various folders so it is best to create them now.
 Under the root create three folders called `Data_Raw`, `Data_Preprocessed` and `Data_Clustered`. Then, in the `visualization` directory create a folder `Results`. 
 To avoid later troubles, please use the same capitalization. The first three folders will store the data during the steps of our analysis, and in the last folder the summarized cluster results will be saved.
 
-To build the documentation as `html` files, run ``make html`` from inside the `docs` directory. Please make sure you have ``shpinx`` and ``sphinx_rtd_theme`` installed.
+To build the documentation as `html` files, run ``make html`` from inside the `docs` directory. Please make sure you have ``sphinx`` and ``sphinx_rtd_theme`` installed.

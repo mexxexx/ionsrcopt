@@ -1,3 +1,5 @@
+.. _data-loading:
+
 Downloading Data from CALS
 ==========================
 The entry point of the analysis is to download the data from

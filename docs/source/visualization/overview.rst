@@ -1,3 +1,5 @@
+.. _visualization:
+
 The visualization package
 =========================
 
@@ -13,3 +15,4 @@ for our analysis, and that will be described in the following sections.
     cluster_description
     cluster_timeseries
     extract_raw_data
+    refill_changes

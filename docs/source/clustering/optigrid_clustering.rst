@@ -1,7 +1,10 @@
+.. _clustering:
+
 Optigrid Clustering
 ===================
 
-Once everything is prepared and preprocessed, it is time to find the clusters.
+Once everything is prepared and preprocessed, it is time to find the clusters. You do this by running the 
+`Optigrid_Clustering.ipynb` notebook in the `Clustering` package.
 
 Note that the implementation of Optigrid is not completely deterministic, so
 different runs can yield slightly different result. This is due to a kernel density

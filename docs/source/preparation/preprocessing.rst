@@ -1,3 +1,5 @@
+.. _preprocessing:
+
 Preprocessing
 =============
 
@@ -12,7 +14,7 @@ Next, we need to do some preprocessing using the `Preprocessing.ipynb` notebook.
 ----------------------------------------------
 
 The data is stored only when something changes, hence it might be that between two consecutive points a different amount of time passes.
-We want to consider this in our cluster analysis, and we do this by weighting each individual point by the number of settings it remained
+We want to consider this in our cluster analysis, and we do this by weighting each individual point by the number of seconds it remained
 unchanged. This is what we call the duration of a data point.
 
 2. Computing the stability
@@ -27,7 +29,8 @@ to match the interpretation of source experts.
 -----------------------
 
 Furthermore, we need to exclude points that happened around voltage breakdowns, as there the HT current is unstable and might introduce noise into
-our analysis. Here, sparks should be detected too, but this is currently done in `detect_breakdowns.py` (TODO: add spark detection code to notebook).
+our analysis. Furthermore, we detect the spark that are happening (This feature was not tested in the notebook, I advise making a sanity check!!).
+The breakdown and spark detection can be also made using the `compute_voltage_breaakdowns.py` script.
 
 4. Check if the source was running
 ----------------------------------

@@ -13,6 +13,12 @@ import numpy as np
 def calculate_source_running(source_current):
     """ Determines whether the source was running, i.e. if the `source_current` 
     (typically BCT05 current) was above 0.004mA.
+
+    Parameters:
+        source_current (Series): A series of values of the current you want to use (typically BCT05)
+
+    Returns:
+        Series: A series with `1` at the indices where the current was above 0.004mA, and a `0` elsewhere.
     """
 
     is_zero_threshold = 0.004

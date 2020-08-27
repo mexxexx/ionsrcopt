@@ -1,3 +1,15 @@
+""" One other question we wanted to answer with our analysis, was wheather the source settings are different before an
+oven refill compared to after a refill. To visualize the setting changes, the `refill_changes.py` script can be used.
+
+The script finds the times where the refills occurred by analyzing the oven power and then searches for the closest 
+previous and closest cluster after that moment. 
+
+How to use it
+-------------
+In the main function of the script, you have to specify the features you are interested in and the relevant files that contain 
+the input data. These are summary csv files outputted by the `cluster_descriptions.py` script.
+"""
+
 import numpy as np
 import pandas as pd
 

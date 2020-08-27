@@ -93,7 +93,10 @@
 <li class="toctree-l2"><a class="reference internal" href="cluster_description.html">Describing the found clusters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cluster_timeseries.html">Visualizing a cluster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="extract_raw_data.html">Extracting raw data</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Change of settings after an oven refill</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Change of settings after an oven refill</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-use-it">How to use it</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -165,6 +168,15 @@
             
   <div class="section" id="module-visualization.refill_changes">
 <span id="change-of-settings-after-an-oven-refill"></span><h1>Change of settings after an oven refill<a class="headerlink" href="#module-visualization.refill_changes" title="Permalink to this headline">¶</a></h1>
+<p>One other question we wanted to answer with our analysis, was wheather the source settings are different before an
+oven refill compared to after a refill. To visualize the setting changes, the <cite>refill_changes.py</cite> script can be used.</p>
+<p>The script finds the times where the refills occurred by analyzing the oven power and then searches for the closest
+previous and closest cluster after that moment.</p>
+<div class="section" id="how-to-use-it">
+<h2>How to use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h2>
+<p>In the main function of the script, you have to specify the features you are interested in and the relevant files that contain
+the input data. These are summary csv files outputted by the <cite>cluster_descriptions.py</cite> script.</p>
+</div>
 </div>
 
 
